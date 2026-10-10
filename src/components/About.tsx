@@ -25,7 +25,7 @@ export default function About() {
             className="space-y-6 text-lg md:text-xl text-neutral-300 leading-relaxed"
           >
             <p>
-              Born at the intersection of cutting-edge technology and premium design, Manify Media is a creative agency built for the modern era. We don't just build websites; we architect digital experiences engineered to convert, scale, and dominate.
+              Born at the intersection of cutting-edge technology and premium design, Manify Media is a creative agency built for the modern era. We don&apos;t just build websites; we architect digital experiences engineered to convert, scale, and dominate.
             </p>
             <p>
               Our expertise lies in blending striking minimalist aesthetics with high-performance frameworks. We leverage the latest in artificial intelligence to produce cinematic, hyper-realistic video campaigns and brand assets that drastically reduce traditional production costs while maximizing visual impact.

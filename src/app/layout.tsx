@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import CustomCursor from "@/components/CustomCursor";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -22,7 +23,10 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} h-full antialiased scroll-smooth`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-neutral-950 text-neutral-50 overflow-x-hidden selection:bg-neutral-800 selection:text-neutral-50">{children}</body>
+      <body className="min-h-full flex flex-col font-sans bg-[#050505] text-white overflow-x-hidden selection:bg-red-500 selection:text-white">
+        <CustomCursor />
+        {children}
+      </body>
     </html>
   );
 }

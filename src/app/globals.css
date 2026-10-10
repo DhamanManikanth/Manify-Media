@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    --background: #000000;
+    --background: #050505;
     --foreground: #ffffff;
   }
 }
@@ -19,10 +19,14 @@ body {
 /* Custom utilities */
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-red-100 to-red-500;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-red-500 via-red-500 to-rose-400;
   }
   
   .glass-card {
-    @apply bg-neutral-950/50 backdrop-blur-md border border-neutral-800/50;
+    @apply bg-[#101010]/80 backdrop-blur-md border border-[#242424] shadow-sm hover:border-red-900/50 transition-colors;
+  }
+  
+  .glass-card-dark {
+    @apply bg-[#050505]/80 backdrop-blur-md border border-[#242424];
   }
 }
