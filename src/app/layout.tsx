@@ -11,6 +11,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Manify Media | Websites That Sell. AI Videos That Captivate.",
   description: "We build premium digital experiences and cutting-edge AI video campaigns designed to scale your brand and multiply your revenue.",
+  icons: {
+    icon: "/images/favicon.png",
+    shortcut: "/images/favicon.png",
+    apple: "/images/favicon.png",
+  },
 };
 
 export default function RootLayout({

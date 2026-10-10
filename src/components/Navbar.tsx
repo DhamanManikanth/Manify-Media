@@ -6,16 +6,20 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 w-full z-50 bg-[#050505]/80 backdrop-blur-md border-b border-[#242424] text-white">
       <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/images/logo.png"
-            alt="Manify Media Logo"
-            width={40}
-            height={40}
-            className="w-auto h-8 brightness-0 invert"
-            priority
-          />
-          <span className="text-xl font-bold tracking-tight">Manify Media</span>
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="relative flex items-center justify-center">
+            <Image
+              src="/images/logo.png"
+              alt="Manify Media Logo"
+              width={42}
+              height={30}
+              className="w-auto h-8 object-contain transition-transform duration-300 group-hover:scale-105"
+              priority
+            />
+          </div>
+          <span className="text-xl font-bold tracking-tight text-white group-hover:text-white/90 transition-colors">
+            Manify Media
+          </span>
         </Link>
         
         <div className="hidden lg:flex items-center gap-6">

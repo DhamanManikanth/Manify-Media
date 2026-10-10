@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Hero() {
   return (
@@ -14,6 +15,23 @@ export default function Hero() {
           transition={{ duration: 0.5 }}
           className="max-w-5xl mx-auto"
         >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#101010] border border-[#242424] mb-8 text-xs font-semibold tracking-wider uppercase text-white/90 shadow-inner"
+          >
+            <Image
+              src="/images/logo-red.png"
+              alt="Manify Media Emblem"
+              width={16}
+              height={12}
+              className="w-auto h-3.5 object-contain"
+              priority
+            />
+            <span>Next-Gen AI Creative Agency</span>
+          </motion.div>
+
           <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-8 leading-tight">
             Websites That Sell. <br className="hidden md:block" />
             AI Videos That <span className="text-gradient">Captivate.</span>

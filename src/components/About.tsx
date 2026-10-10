@@ -1,17 +1,34 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function About() {
   return (
     <section className="py-24 bg-black border-t border-neutral-900">
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto text-center space-y-8">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="flex justify-center"
+          >
+            <Image
+              src="/images/logo-red.png"
+              alt="Manify Media Emblem"
+              width={64}
+              height={44}
+              className="w-auto h-12 object-contain"
+            />
+          </motion.div>
+
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
             className="text-4xl md:text-5xl font-bold tracking-tight"
           >
             We are Manify Media.
