@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 
 const works = [
+  // To add extra images, simply upload them to the 'public/images' folder
+  // and add a new entry to this array with the correct 'src' path.
   {
     id: 1,
     src: "/images/work-1.png",
@@ -63,6 +65,7 @@ export default function WorkSamples() {
                 src={work.src}
                 alt={work.alt}
                 fill
+                priority={index < 2} // Preload the first two images for better LCP
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />

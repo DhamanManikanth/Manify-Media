@@ -13,6 +13,7 @@ export default function Navbar() {
             width={40}
             height={40}
             className="w-auto h-8"
+            priority
           />
           <span className="text-xl font-bold tracking-tight">Manify Media</span>
         </Link>
