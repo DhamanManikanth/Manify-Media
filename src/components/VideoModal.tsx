@@ -63,7 +63,9 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
                 src={video.videoUrl} 
                 controls 
                 autoPlay 
-                className="w-full h-full object-cover"
+                playsInline
+                preload="metadata"
+                className="w-full h-full object-contain bg-black"
                 poster={video.thumbnailUrl}
               />
             ) : (
