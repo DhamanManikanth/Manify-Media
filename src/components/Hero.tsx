@@ -4,34 +4,11 @@ import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Video, Eye, Languages, Zap } from "lucide-react";
-
-const metrics = [
-  {
-    icon: Video,
-    value: "50+",
-    label: "AI Campaigns Delivered",
-  },
-  {
-    icon: Eye,
-    value: "10M+",
-    label: "Organic Impressions",
-  },
-  {
-    icon: Languages,
-    value: "3",
-    label: "Languages (EN • TE • HI)",
-  },
-  {
-    icon: Zap,
-    value: "48h",
-    label: "Rapid Delivery",
-  },
-];
+import { ArrowRight } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="relative pt-32 pb-24 md:pt-48 md:pb-36 flex items-center justify-center min-h-[92vh] bg-[#050505] text-white overflow-hidden">
+    <section className="relative pt-32 pb-24 md:pt-48 md:pb-36 flex items-center justify-center min-h-[90vh] bg-[#050505] text-white overflow-hidden">
       {/* Precision architectural background grid */}
       <div 
         className="absolute inset-0 opacity-[0.07] pointer-events-none"
@@ -42,7 +19,7 @@ export default function Hero() {
       />
 
       {/* Ambient background glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-[#F00016]/8 rounded-full blur-[140px] pointer-events-none -z-10" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-[#F00016]/8 rounded-full blur-[140px] pointer-events-none -z-10" />
       <div className="absolute top-1/2 right-10 w-[300px] h-[300px] bg-[#F00016]/4 rounded-full blur-[100px] pointer-events-none -z-10" />
 
       <div className="container mx-auto px-6 text-center z-10">
@@ -84,7 +61,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15 }}
-            className="text-lg md:text-2xl text-[#A3A3A3] mb-11 max-w-3xl mx-auto leading-relaxed font-normal"
+            className="text-lg md:text-2xl text-[#A3A3A3] mb-12 max-w-3xl mx-auto leading-relaxed font-normal"
           >
             We engineer high-converting digital flagships and cinematic AI video campaigns that turn audience attention into scalable revenue.
           </motion.p>
@@ -94,7 +71,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.25 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Button asChild size="lg" className="w-full sm:w-auto text-base font-semibold px-8 py-6 bg-[#F00016] hover:bg-[#D00013] text-white border border-[#F00016] shadow-xl shadow-[#F00016]/25 group">
               <Link href="#contact" className="flex items-center gap-2">
@@ -107,31 +84,6 @@ export default function Hero() {
                 Explore Creative Work
               </Link>
             </Button>
-          </motion.div>
-
-          {/* Enterprise-grade Social Proof & Metrics Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35 }}
-            className="pt-10 border-t border-[#1c1c1c] max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center"
-          >
-            {metrics.map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <div key={i} className="flex flex-col items-center group">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Icon className="w-4 h-4 text-[#F00016]" />
-                    <span className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
-                      {item.value}
-                    </span>
-                  </div>
-                  <span className="text-xs text-[#888] font-medium tracking-wide uppercase">
-                    {item.label}
-                  </span>
-                </div>
-              );
-            })}
           </motion.div>
         </motion.div>
       </div>
