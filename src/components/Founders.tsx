@@ -41,8 +41,8 @@ const founders: Founder[] = [
       "Passionate about turning creative ideas into impactful content for brands.",
     ],
     socials: [
-      { platform: "linkedin", label: "LinkedIn", href: "#" },
-      { platform: "instagram", label: "Instagram", href: "#" },
+      { platform: "linkedin", label: "LinkedIn", href: "https://www.linkedin.com/in/dhaman-manikanth-goli" },
+      { platform: "instagram", label: "Instagram", href: "https://www.instagram.com/dhaman_manikanth/?hl=en" },
       { platform: "youtube", label: "YouTube", href: "#" },
     ],
   },
