@@ -59,8 +59,8 @@ const founders: Founder[] = [
       "Passionate about combining AI technology with real-world business applications.",
     ],
     socials: [
-      { platform: "linkedin", label: "LinkedIn", href: "#" },
-      { platform: "instagram", label: "Instagram", href: "#" },
+      { platform: "linkedin", label: "LinkedIn", href: "https://www.linkedin.com/in/rachamadugusaimanideep/" },
+      { platform: "instagram", label: "Instagram", href: "https://www.instagram.com/saimanideep_999?utm_source=ig_web_button_share_sheet&psln=ZDNlZDc0MzIxNw==" },
     ],
   },
 ];
@@ -127,7 +127,7 @@ function FounderCard({ founder, index }: { founder: Founder; index: number }) {
 
         {/* Profile Image & Header */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-7 relative z-10">
-          <div className="relative w-28 h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden flex-shrink-0 bg-[#161616] border-2 border-[#242424] group-hover:border-[#F00016]/50 transition-colors duration-500 shadow-md">
+          <div className="relative w-28 h-36 sm:w-32 sm:h-40 md:w-36 md:h-44 rounded-2xl overflow-hidden flex-shrink-0 bg-[#161616] border-2 border-[#242424] group-hover:border-[#F00016]/50 transition-colors duration-500 shadow-xl">
             {!imageError ? (
               <Image
                 src={founder.photoSrc}
@@ -150,6 +150,10 @@ function FounderCard({ founder, index }: { founder: Founder; index: number }) {
           </div>
 
           <div className="text-center sm:text-left flex-1">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#181818] border border-[#262626] text-[10px] uppercase font-bold tracking-wider text-[#bbb] mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#F00016]" />
+              Co-Founder
+            </div>
             <h3 className="text-2xl md:text-3xl font-bold text-white mb-2 group-hover:text-white transition-colors">
               {founder.name}
             </h3>
