@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Languages, Zap } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -71,7 +71,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.25 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
           >
             <Button asChild size="lg" className="w-full sm:w-auto text-base font-semibold px-8 py-6 bg-[#F00016] hover:bg-[#D00013] text-white border border-[#F00016] shadow-xl shadow-[#F00016]/25 group">
               <Link href="#contact" className="flex items-center gap-2">
@@ -80,10 +80,38 @@ export default function Hero() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="w-full sm:w-auto text-base font-semibold px-8 py-6 border-[#282828] bg-[#0c0c0c]/80 backdrop-blur-md text-white hover:bg-[#1a1a1a] hover:border-[#F00016]/50">
-              <Link href="#posters">
-                Explore Creative Work
+              <Link href="#client-work">
+                Explore Client Work
               </Link>
             </Button>
+          </motion.div>
+
+          {/* Core Capability Highlights: 3 Languages & 48h Rapid Delivery */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
+            className="pt-10 border-t border-[#1c1c1c] max-w-xl mx-auto flex flex-wrap items-center justify-center gap-4 sm:gap-8"
+          >
+            <div className="flex items-center gap-3.5 px-5 py-3 rounded-2xl bg-[#0c0c0c] border border-[#222] shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-[#F00016]/10 border border-[#F00016]/30 flex items-center justify-center">
+                <Languages className="w-5 h-5 text-[#F00016]" />
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-bold text-white">3 Native Languages</div>
+                <div className="text-xs text-[#888]">English • Telugu • Hindi</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3.5 px-5 py-3 rounded-2xl bg-[#0c0c0c] border border-[#222] shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-[#F00016]/10 border border-[#F00016]/30 flex items-center justify-center">
+                <Zap className="w-5 h-5 text-[#F00016]" />
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-bold text-white">48h Delivery</div>
+                <div className="text-xs text-[#888]">Rapid Production Turnaround</div>
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       </div>

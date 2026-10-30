@@ -23,6 +23,7 @@ export default function Navbar() {
         </Link>
         
         <div className="hidden lg:flex items-center gap-6">
+          <Link href="#client-work" className="text-sm font-medium text-white/80 hover:text-white transition-colors">Client Work</Link>
           <Link href="#ai-ads" className="text-sm font-medium text-white/80 hover:text-white transition-colors">AI Ads</Link>
           <Link href="#reels" className="text-sm font-medium text-white/80 hover:text-white transition-colors">Reels</Link>
           <Link href="#long-videos" className="text-sm font-medium text-white/80 hover:text-white transition-colors">Long Videos</Link>

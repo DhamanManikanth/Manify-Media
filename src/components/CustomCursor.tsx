@@ -101,7 +101,6 @@ export default function CustomCursor() {
             height: isPointer ? 48 : 32,
             scale: isClicked ? 0.85 : 1,
             borderColor: isPointer ? "rgba(240, 0, 22, 0.9)" : "rgba(255, 255, 255, 0.35)",
-            borderWidth: isPointer ? 1.5 : 1,
             boxShadow: isPointer
               ? "0 0 16px 2px rgba(240, 0, 22, 0.4), inset 0 0 10px rgba(240, 0, 22, 0.1)"
               : "0 0 0 0 transparent",
@@ -112,7 +111,7 @@ export default function CustomCursor() {
             damping: 25,
             mass: 0.1,
           }}
-          className="rounded-full bg-transparent border transition-colors duration-200"
+          className="rounded-full bg-transparent border-[1.5px] transition-colors duration-200"
         >
           {/* Subtle Creative Crosshair Accents on Hover */}
           {isPointer && (

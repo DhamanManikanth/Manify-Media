@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import ClientVideos from "@/components/ClientVideos";
 import BrandAds from "@/components/BrandAds";
 import ShortFormReels from "@/components/ShortFormReels";
 import LongFormVideos from "@/components/LongFormVideos";
@@ -19,6 +20,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col bg-[#050505]">
       <Navbar />
       <Hero />
+      <ClientVideos />
       <BrandAds />
       <ShortFormReels />
       <LongFormVideos />

@@ -1,227 +1,285 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import { motion, useScroll, useTransform, useSpring, useInView } from "framer-motion";
-import { Search, PenTool, CheckCircle, Rocket } from "lucide-react";
+import { useRef } from "react";
+import { motion, useScroll, useTransform, useSpring, type MotionValue } from "framer-motion";
+import { Search, PenTool, CheckCircle, Rocket, ArrowDown } from "lucide-react";
 
-const steps = [
+interface ProcessStep {
+  number: string;
+  dayBadge: string;
+  icon: typeof Search;
+  iconEmoji: string;
+  title: string;
+  description: string;
+  detail: string;
+}
+
+const steps: ProcessStep[] = [
   {
     number: "01",
+    dayBadge: "DAY 1",
     icon: Search,
-    title: "Understand",
-    description: "Learn about the project, audience, and objective.",
-    detail: "Deep research into your brand identity, target audience, and campaign goals to lay the perfect foundation.",
+    iconEmoji: "🔍",
+    title: "Discovery & Creative Audit",
+    description: "We analyze your brand DNA, target demographics, and competitors to architect high-retention creative hooks.",
+    detail: "Deep dive into your visual identity, platform algorithms, and audience psychology to build a foolproof roadmap.",
   },
   {
     number: "02",
+    dayBadge: "DAY 2–3",
     icon: PenTool,
-    title: "Create",
-    description: "Develop the concept, script, visual direction, and AI-assisted production.",
-    detail: "From storyboarding to AI-powered production, we craft every frame with precision and creative intent.",
+    iconEmoji: "🗺️",
+    title: "Concept, Script & Direction",
+    description: "Developing narrative frameworks, cinematic AI prompts, shot sequences, and multilingual storytelling.",
+    detail: "Collaborative script refinement and visual styling alignment before full production rollout.",
   },
   {
     number: "03",
+    dayBadge: "DAY 4–5",
     icon: CheckCircle,
-    title: "Refine",
-    description: "Review the content and make agreed revisions.",
-    detail: "Collaborative feedback loops ensure every detail meets your vision. We iterate until it's perfect.",
+    iconEmoji: "⚡",
+    title: "AI Production & Fine-Tuning",
+    description: "Generating photorealistic visual assets, cinematic sound design, neural voiceovers, and fluid motion graphics.",
+    detail: "Frame-by-frame quality assurance and feedback loops to ensure every cut exceeds industry standards.",
   },
   {
     number: "04",
+    dayBadge: "DAY 6–7",
     icon: Rocket,
-    title: "Deliver",
-    description: "Prepare and deliver the final video in the requested format and language.",
-    detail: "Optimized exports for every platform — ready to captivate your audience and drive results.",
+    iconEmoji: "🚀",
+    title: "Master Delivery & Scaling",
+    description: "Exporting optimized multi-platform cuts (9:16 vertical reels, 16:9 ads) in English, Telugu, and Hindi.",
+    detail: "Distribution-ready master files delivered with guidance to maximize algorithmic reach and conversion.",
   },
 ];
 
-function StepCard({ step, index, isActive }: {
-  step: typeof steps[0];
-  index: number;
-  isActive: boolean;
-}) {
-  const Icon = step.icon;
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: false, margin: "-20% 0px -20% 0px" });
-
-  return (
-    <motion.div
-      ref={ref}
-      className="relative flex gap-6 md:gap-10 items-start group"
-      initial={{ opacity: 0, x: -30 }}
-      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0.3, x: -30 }}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {/* Step number and icon circle */}
-      <div className="relative flex-shrink-0 z-10">
-        <motion.div
-          className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center relative"
-          animate={{
-            scale: isActive ? 1.1 : 1,
-            borderColor: isActive ? "#F00016" : "#242424",
-            backgroundColor: isActive ? "rgba(240, 0, 22, 0.15)" : "rgba(16, 16, 16, 1)",
-          }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          style={{
-            border: "2px solid",
-            boxShadow: isActive
-              ? "0 0 20px 4px rgba(240, 0, 22, 0.4), 0 0 40px 8px rgba(255, 51, 75, 0.2)"
-              : "0 0 0 0 transparent",
-          }}
-        >
-          <Icon
-            className="w-7 h-7 md:w-8 md:h-8 transition-colors duration-500"
-            style={{ color: isActive ? "#F00016" : "#666" }}
-          />
-        </motion.div>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 pb-16 md:pb-24">
-        <motion.div
-          animate={{
-            y: isActive ? 0 : 5,
-          }}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="flex items-center gap-3 mb-2">
-            <span
-              className="text-xs font-bold tracking-[0.2em] uppercase transition-colors duration-500"
-              style={{ color: isActive ? "#F00016" : "#555" }}
-            >
-              Step {step.number}
-            </span>
-            {isActive && (
-              <motion.div
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: 32, opacity: 1 }}
-                className="h-[2px] bg-gradient-to-r from-[#F00016] to-[#FF334B] rounded-full"
-              />
-            )}
-          </div>
-
-          <motion.h3
-            className="text-2xl md:text-3xl font-bold mb-3 transition-colors duration-500"
-            style={{ color: isActive ? "#fff" : "#666" }}
-          >
-            {step.title}
-          </motion.h3>
-
-          <motion.p
-            className="text-base md:text-lg leading-relaxed max-w-md transition-colors duration-500"
-            style={{ color: isActive ? "#A3A3A3" : "#444" }}
-          >
-            {step.description}
-          </motion.p>
-
-          <motion.p
-            className="mt-3 text-sm leading-relaxed max-w-md overflow-hidden"
-            initial={{ height: 0, opacity: 0 }}
-            animate={isActive ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            style={{ color: "#777" }}
-          >
-            {step.detail}
-          </motion.p>
-        </motion.div>
-      </div>
-    </motion.div>
-  );
-}
-
 export default function Process() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const timelineRef = useRef<HTMLDivElement>(null);
-  const [activeStep, setActiveStep] = useState(0);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start 0.7", "end 0.3"],
+    offset: ["start 75%", "end 45%"],
   });
 
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 80,
-    damping: 25,
+    stiffness: 90,
+    damping: 24,
     restDelta: 0.001,
   });
 
-  // Track line height progress
+  // Track vertical path line progress from 0% to 100%
   const lineHeight = useTransform(smoothProgress, [0, 1], ["0%", "100%"]);
 
-  // Track active step based on scroll
-  useEffect(() => {
-    const unsubscribe = scrollYProgress.on("change", (v) => {
-      const stepIndex = Math.min(Math.floor(v * steps.length), steps.length - 1);
-      setActiveStep(Math.max(0, stepIndex));
-    });
-    return unsubscribe;
-  }, [scrollYProgress]);
-
   return (
-    <section id="process" className="py-24 md:py-32 bg-[#050505] text-white border-t border-[#242424] overflow-hidden">
-      <div className="container mx-auto px-6">
+    <section id="process" className="py-24 md:py-36 bg-[#050505] text-white border-t border-[#242424] relative overflow-hidden">
+      {/* Background ambient lighting */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-[#F00016]/4 rounded-full blur-[150px] pointer-events-none" />
+
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Section Header */}
         <motion.div
-          className="text-center mb-20 md:mb-28"
+          className="text-center mb-16 md:mb-24 max-w-2xl mx-auto"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <motion.span
-            className="inline-block text-xs font-bold tracking-[0.25em] uppercase text-[#F00016] mb-4"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#141414] border border-[#262626] text-xs font-bold tracking-[0.25em] uppercase text-[#F00016] mb-4"
           >
-            Our Process
-          </motion.span>
-          <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
-            From Idea to{" "}
-            <span className="text-gradient">Final Video</span>
+            <span>Our Process</span>
+          </motion.div>
+
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            From Idea to <span className="text-gradient">Viral Results</span>
           </h2>
-          <p className="text-[#A3A3A3] text-lg max-w-xl mx-auto">
-            A streamlined creative workflow designed for speed, quality, and collaboration.
+
+          <p className="text-[#A3A3A3] text-base md:text-lg flex items-center justify-center gap-2">
+            <span>From first call to delivery in under a week. Scroll to follow the path.</span>
+            <ArrowDown className="w-4 h-4 text-[#F00016] animate-bounce inline-block" />
           </p>
         </motion.div>
 
-        {/* Timeline */}
-        <div ref={containerRef} className="relative max-w-2xl mx-auto">
-          {/* Vertical line track */}
-          <div className="absolute left-[31px] md:left-[39px] top-0 bottom-0 w-[2px] bg-[#1a1a1a]">
-            {/* Animated progress line */}
+        {/* Central Interactive Timeline */}
+        <div ref={containerRef} className="relative max-w-5xl mx-auto py-8">
+          {/* Continuous Center Track Line (Desktop: Center, Mobile: Left) */}
+          <div className="absolute left-6 md:left-1/2 top-4 bottom-8 w-[3px] -translate-x-1/2 bg-[#1c1c1c] rounded-full overflow-hidden">
+            {/* Animated Red Fill Line */}
             <motion.div
-              className="w-full rounded-full origin-top"
-              style={{
-                height: lineHeight,
-                background: "linear-gradient(180deg, #F00016, #FF334B)",
-              }}
-            />
-            {/* Glowing dot at the end of progress */}
-            <motion.div
-              className="absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full"
-              style={{
-                top: lineHeight,
-                background: "radial-gradient(circle, #F00016, #FF334B)",
-                boxShadow: "0 0 16px 4px rgba(240, 0, 22, 0.6), 0 0 32px 8px rgba(255, 51, 75, 0.3)",
-                marginTop: "-8px",
-              }}
+              className="w-full origin-top rounded-full bg-gradient-to-b from-[#F00016] via-[#FF334B] to-[#F00016]"
+              style={{ height: lineHeight }}
             />
           </div>
 
-          {/* Steps */}
-          <div ref={timelineRef}>
-            {steps.map((step, index) => (
-              <StepCard
-                key={step.number}
-                step={step}
-                index={index}
-                isActive={index <= activeStep}
-              />
-            ))}
+          {/* Glowing Lead Tracker Node */}
+          <motion.div
+            className="absolute left-6 md:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full pointer-events-none z-20"
+            style={{
+              top: lineHeight,
+              background: "#FF334B",
+              boxShadow: "0 0 16px 5px rgba(240, 0, 22, 0.8), 0 0 32px 10px rgba(255, 51, 75, 0.4)",
+              marginTop: "8px",
+            }}
+          />
+
+          {/* Timeline Steps */}
+          <div className="space-y-16 md:space-y-28 relative z-10">
+            {steps.map((step, index) => {
+              const isEven = index % 2 === 0; // Even = Left on desktop, Odd = Right on desktop
+              const stepProgressStart = index / steps.length;
+              const stepProgressEnd = (index + 0.6) / steps.length;
+
+              return (
+                <TimelineStepItem
+                  key={step.number}
+                  step={step}
+                  isEven={isEven}
+                  smoothProgress={smoothProgress}
+                  stepProgressStart={stepProgressStart}
+                  stepProgressEnd={stepProgressEnd}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function TimelineStepItem({
+  step,
+  isEven,
+  smoothProgress,
+  stepProgressStart,
+  stepProgressEnd,
+}: {
+  step: ProcessStep;
+  isEven: boolean;
+  smoothProgress: MotionValue<number>;
+  stepProgressStart: number;
+  stepProgressEnd: number;
+}) {
+  // Smoothly activate node and card based on scroll progress
+  const isActiveTransform = useTransform(
+    smoothProgress,
+    [stepProgressStart, stepProgressEnd],
+    [0, 1]
+  );
+
+  // Card opacity and scale based on progress
+  const cardOpacity = useTransform(smoothProgress, [Math.max(0, stepProgressStart - 0.1), stepProgressStart + 0.1], [0.35, 1]);
+  const cardScale = useTransform(smoothProgress, [Math.max(0, stepProgressStart - 0.1), stepProgressStart + 0.1], [0.96, 1]);
+
+  return (
+    <div className="relative flex flex-col md:flex-row items-start md:items-center w-full">
+      {/* Central Step Number Circle (01, 02, etc.) */}
+      <div className="absolute left-6 md:left-1/2 -translate-x-1/2 z-20 flex items-center justify-center">
+        <motion.div
+          style={{ scale: cardScale }}
+          className="w-11 h-11 md:w-13 md:h-13 rounded-full flex items-center justify-center transition-all duration-500 relative"
+        >
+          {/* Active Glowing Outer Ring */}
+          <motion.div
+            className="absolute inset-0 rounded-full border-2 border-[#F00016] bg-[#F00016]/10"
+            style={{
+              opacity: isActiveTransform,
+              boxShadow: "0 0 20px 4px rgba(240, 0, 22, 0.45)",
+            }}
+          />
+
+          {/* Base Node */}
+          <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#0c0c0c] border border-[#2b2b2b] flex items-center justify-center relative z-10 shadow-lg">
+            <span className="text-xs md:text-sm font-black tracking-wider text-white">
+              {step.number}
+            </span>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Alternating Layout:
+          On Desktop:
+          - If isEven (01, 03): Card sits on the LEFT (col 1), empty placeholder on the RIGHT.
+          - If !isEven (02, 04): Empty placeholder on the LEFT, Card sits on the RIGHT (col 2).
+          On Mobile:
+          - Card is always pushed to the right of the left timeline track.
+      */}
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 items-center">
+        {/* LEFT COLUMN (Desktop) */}
+        <div className={`pl-14 md:pl-0 ${isEven ? "md:text-right" : "hidden md:block"}`}>
+          {isEven ? (
+            <motion.div
+              style={{ opacity: cardOpacity, scale: cardScale }}
+              className="rounded-3xl p-[1px] bg-gradient-to-b from-[#262626] via-[#1a1a1a] to-[#141414] hover:from-[#F00016]/60 hover:to-[#242424] transition-all duration-500 shadow-xl group"
+            >
+              <div className="rounded-[23px] bg-[#0c0c0c] p-6 sm:p-8 text-left relative overflow-hidden">
+                {/* Top Row: Title + Day Badge */}
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-xl">{step.iconEmoji}</span>
+                    <h3 className="text-xl sm:text-2xl font-bold text-white group-hover:text-white transition-colors">
+                      {step.title}
+                    </h3>
+                  </div>
+
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-[#181818] border border-[#2b2b2b] text-[#F00016] shadow-sm flex-shrink-0">
+                    {step.dayBadge}
+                  </span>
+                </div>
+
+                <p className="text-sm sm:text-base text-[#A3A3A3] leading-relaxed mb-4">
+                  {step.description}
+                </p>
+
+                <p className="text-xs sm:text-sm text-[#777] leading-relaxed pt-3 border-t border-[#1a1a1a]">
+                  {step.detail}
+                </p>
+              </div>
+            </motion.div>
+          ) : (
+            <div className="hidden md:block" />
+          )}
+        </div>
+
+        {/* RIGHT COLUMN (Desktop) */}
+        <div className={`pl-14 md:pl-0 ${!isEven ? "" : "hidden md:block"}`}>
+          {!isEven ? (
+            <motion.div
+              style={{ opacity: cardOpacity, scale: cardScale }}
+              className="rounded-3xl p-[1px] bg-gradient-to-b from-[#262626] via-[#1a1a1a] to-[#141414] hover:from-[#F00016]/60 hover:to-[#242424] transition-all duration-500 shadow-xl group"
+            >
+              <div className="rounded-[23px] bg-[#0c0c0c] p-6 sm:p-8 text-left relative overflow-hidden">
+                {/* Top Row: Title + Day Badge */}
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-xl">{step.iconEmoji}</span>
+                    <h3 className="text-xl sm:text-2xl font-bold text-white group-hover:text-white transition-colors">
+                      {step.title}
+                    </h3>
+                  </div>
+
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-[#181818] border border-[#2b2b2b] text-[#F00016] shadow-sm flex-shrink-0">
+                    {step.dayBadge}
+                  </span>
+                </div>
+
+                <p className="text-sm sm:text-base text-[#A3A3A3] leading-relaxed mb-4">
+                  {step.description}
+                </p>
+
+                <p className="text-xs sm:text-sm text-[#777] leading-relaxed pt-3 border-t border-[#1a1a1a]">
+                  {step.detail}
+                </p>
+              </div>
+            </motion.div>
+          ) : (
+            <div className="hidden md:block" />
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

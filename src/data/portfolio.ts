@@ -185,3 +185,37 @@ export const educationalVideos: PortfolioVideo[] = [
     subject: "Mathematics"
   }
 ];
+
+// 6. Client Projects & Commercial Work
+export const clientVideos: PortfolioVideo[] = [
+  {
+    id: "client-001",
+    title: "Client Brand Campaign Reel",
+    description: "High-impact vertical promotional reel produced for our brand partner, engineered for maximum audience retention and viral reach.",
+    category: "Client Work",
+    videoUrl: "/videos/client-reel-1.mp4",
+    thumbnailUrl: "/images/thumb-client-reel-1.jpg",
+    aspectRatio: "9:16",
+    languages: ["English"]
+  },
+  {
+    id: "client-002",
+    title: "Client Commercial Showcase",
+    description: "Dynamic commercial reel crafted with AI-assisted visuals, fast-paced cinematic editing, and tailored sound design.",
+    category: "Client Work",
+    videoUrl: "/videos/client-reel-2.mp4",
+    thumbnailUrl: "/images/thumb-client-reel-2.jpg",
+    aspectRatio: "9:16",
+    languages: ["English"]
+  },
+  {
+    id: "client-003",
+    title: "Client Product & Marketing Feature",
+    description: "Creative promotional video engineered for cross-platform campaigns, client acquisition, and digital marketing dominance.",
+    category: "Client Work",
+    videoUrl: "/videos/client-video-3.mp4",
+    thumbnailUrl: "/images/thumb-client-video-3.jpg",
+    aspectRatio: "9:16",
+    languages: ["English"]
+  }
+];

@@ -110,6 +110,19 @@ function SocialIcon({ platform }: { platform: "linkedin" | "instagram" | "youtub
   }
 }
 
+function getSocialStyles(platform: "linkedin" | "instagram" | "youtube") {
+  switch (platform) {
+    case "linkedin":
+      return "text-[#0A66C2] bg-[#0A66C2]/15 border-[#0A66C2]/40 hover:bg-[#0A66C2] hover:text-white hover:border-[#0A66C2] hover:shadow-lg hover:shadow-[#0A66C2]/30";
+    case "instagram":
+      return "text-[#E4405F] bg-[#E4405F]/15 border-[#E4405F]/40 hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#dc2743] hover:to-[#bc1888] hover:text-white hover:border-transparent hover:shadow-lg hover:shadow-[#E4405F]/30";
+    case "youtube":
+      return "text-[#FF0000] bg-[#FF0000]/15 border-[#FF0000]/40 hover:bg-[#FF0000] hover:text-white hover:border-[#FF0000] hover:shadow-lg hover:shadow-[#FF0000]/30";
+    default:
+      return "text-white bg-[#161616] border-[#262626] hover:bg-[#F00016]";
+  }
+}
+
 function FounderCard({ founder, index }: { founder: Founder; index: number }) {
   const [imageError, setImageError] = useState(false);
 
@@ -170,7 +183,10 @@ function FounderCard({ founder, index }: { founder: Founder; index: number }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`${founder.name} on ${social.label}`}
-                  className="w-9 h-9 rounded-full bg-[#161616] border border-[#262626] flex items-center justify-center text-[#999] hover:text-white hover:bg-[#F00016] hover:border-[#F00016] transition-all duration-300 shadow-sm"
+                  title={social.label}
+                  className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all duration-300 shadow-sm ${getSocialStyles(
+                    social.platform
+                  )}`}
                 >
                   <SocialIcon platform={social.platform} />
                 </a>
