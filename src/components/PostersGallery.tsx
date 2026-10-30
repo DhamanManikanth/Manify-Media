@@ -5,7 +5,7 @@ import { motion, AnimatePresence, useInView } from "framer-motion";
 import Image from "next/image";
 import { X, ZoomIn } from "lucide-react";
 
-type PosterCategory = "all" | "brand" | "social" | "event" | "promo";
+type PosterCategory = "all" | "brand" | "social" | "promo";
 
 interface Poster {
   id: number;
@@ -19,18 +19,18 @@ interface Poster {
 const posters: Poster[] = [
   {
     id: 1,
-    src: "/images/work-1.png",
-    alt: "AI Fashion Brand Campaign",
+    src: "/images/poster-biryani-blockbuster.jpg",
+    alt: "Every Brand Is A Blockbuster – Manify Media",
     category: "brand",
     categoryLabel: "Brand Campaign",
     aspect: "portrait",
   },
   {
     id: 2,
-    src: "/images/work-2.jpeg",
-    alt: "Fashion Social Media Poster",
-    category: "social",
-    categoryLabel: "Social Media Poster",
+    src: "/images/poster-ai-videos.png",
+    alt: "AI-Generated Videos for Ads, Social Media & Business",
+    category: "promo",
+    categoryLabel: "Promotional Creative",
     aspect: "portrait",
   },
   {
@@ -45,8 +45,8 @@ const posters: Poster[] = [
     id: 4,
     src: "/images/work-4.png",
     alt: "Minimalist Product Campaign",
-    category: "promo",
-    categoryLabel: "Promotional Creative",
+    category: "social",
+    categoryLabel: "Social Media Creative",
     aspect: "portrait",
   },
   {
@@ -59,10 +59,10 @@ const posters: Poster[] = [
   },
   {
     id: 6,
-    src: "/images/work-6.jpeg",
-    alt: "Fashion Event Campaign",
-    category: "event",
-    categoryLabel: "Event Poster",
+    src: "/images/work-1.png",
+    alt: "Cinematic Visual Campaign",
+    category: "social",
+    categoryLabel: "Social Media Poster",
     aspect: "portrait",
   },
 ];
@@ -71,7 +71,6 @@ const categories: { value: PosterCategory; label: string }[] = [
   { value: "all", label: "All Work" },
   { value: "brand", label: "Brand Campaigns" },
   { value: "social", label: "Social Media" },
-  { value: "event", label: "Event Posters" },
   { value: "promo", label: "Promotional" },
 ];
 
@@ -221,7 +220,7 @@ export default function PostersGallery() {
           </p>
         </motion.div>
 
-        {/* Category Filters */}
+        {/* Category Filters (Event Posters removed) */}
         <motion.div
           className="flex flex-wrap items-center justify-center gap-2 md:gap-3 mb-14"
           initial={{ opacity: 0, y: 20 }}

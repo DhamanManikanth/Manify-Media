@@ -43,7 +43,7 @@ const founders: Founder[] = [
     socials: [
       { platform: "linkedin", label: "LinkedIn", href: "https://www.linkedin.com/in/dhaman-manikanth-goli" },
       { platform: "instagram", label: "Instagram", href: "https://www.instagram.com/dhaman_manikanth/?hl=en" },
-      { platform: "youtube", label: "YouTube", href: "#" },
+      { platform: "youtube", label: "YouTube", href: "https://www.youtube.com/@Dhaman_explores" },
     ],
   },
   {
