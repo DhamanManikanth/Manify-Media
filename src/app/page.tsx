@@ -10,6 +10,7 @@ import MultilingualServices from "@/components/MultilingualServices";
 import PostersGallery from "@/components/PostersGallery";
 import Process from "@/components/Process";
 import Pricing from "@/components/Pricing";
+import Founders from "@/components/Founders";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 
@@ -28,6 +29,7 @@ export default function Home() {
       <PostersGallery />
       <Process />
       <Pricing />
+      <Founders />
       <Contact />
       <Footer />
     </main>
