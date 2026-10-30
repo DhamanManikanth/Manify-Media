@@ -28,9 +28,11 @@ export default function Navbar() {
           <Link href="#long-videos" className="text-sm font-medium text-white/80 hover:text-white transition-colors">Long Videos</Link>
           <Link href="#animation" className="text-sm font-medium text-white/80 hover:text-white transition-colors">Animation</Link>
           <Link href="#education" className="text-sm font-medium text-white/80 hover:text-white transition-colors">Education</Link>
+          <Link href="#posters" className="text-sm font-medium text-white/80 hover:text-white transition-colors">Posters</Link>
+          <Link href="#pricing" className="text-sm font-medium text-white/80 hover:text-white transition-colors">Pricing</Link>
         </div>
 
-        <Button asChild variant="default" className="bg-[#F00016] text-white hover:bg-red-700">
+        <Button asChild variant="default" className="bg-[#F00016] text-white hover:bg-[#D00013]">
           <Link href="#contact">Start Your Project</Link>
         </Button>
       </div>

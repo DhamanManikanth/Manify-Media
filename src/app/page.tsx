@@ -7,13 +7,15 @@ import AnimeAnimation from "@/components/AnimeAnimation";
 import EducationalServices from "@/components/EducationalServices";
 import EducationalGallery from "@/components/EducationalGallery";
 import MultilingualServices from "@/components/MultilingualServices";
+import PostersGallery from "@/components/PostersGallery";
 import Process from "@/components/Process";
+import Pricing from "@/components/Pricing";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col bg-white">
+    <main className="flex min-h-screen flex-col bg-[#050505]">
       <Navbar />
       <Hero />
       <BrandAds />
@@ -23,7 +25,9 @@ export default function Home() {
       <EducationalServices />
       <EducationalGallery />
       <MultilingualServices />
+      <PostersGallery />
       <Process />
+      <Pricing />
       <Contact />
       <Footer />
     </main>

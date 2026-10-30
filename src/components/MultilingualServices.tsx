@@ -68,7 +68,7 @@ export default function MultilingualServices() {
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
         >
-          <Button asChild size="lg" className="bg-[#F00016] text-white hover:bg-red-700 font-semibold px-8 py-6 text-lg border border-[#F00016]">
+          <Button asChild size="lg" className="bg-[#F00016] text-white hover:bg-[#D00013] font-semibold px-8 py-6 text-lg border border-[#F00016]">
             <Link href="#contact">Create Multilingual Videos</Link>
           </Button>
         </motion.div>

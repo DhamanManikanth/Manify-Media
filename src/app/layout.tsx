@@ -28,7 +28,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} h-full antialiased scroll-smooth`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-[#050505] text-white overflow-x-hidden selection:bg-red-500 selection:text-white">
+      <body className="min-h-full flex flex-col font-sans bg-[#050505] text-white overflow-x-hidden selection:bg-[#F00016] selection:text-white">
         <CustomCursor />
         {children}
       </body>

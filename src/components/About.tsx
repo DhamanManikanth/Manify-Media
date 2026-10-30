@@ -20,7 +20,7 @@ export default function About() {
               alt="Manify Media Emblem"
               width={64}
               height={44}
-              className="w-auto h-12 object-contain"
+              className="w-auto h-12 object-contain filter drop-shadow-[0_0_20px_rgba(240,0,22,0.35)]"
             />
           </motion.div>
 

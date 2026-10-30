@@ -22,7 +22,7 @@ export default function AnimeAnimation() {
               Character-driven stories, expressive animation, and imaginative worlds created with the power of AI.
             </p>
           </div>
-          <Button asChild size="lg" className="shrink-0 bg-[#F00016] text-white hover:bg-red-700 border border-[#F00016]">
+          <Button asChild size="lg" className="shrink-0 bg-[#F00016] text-white hover:bg-[#D00013] border border-[#F00016]">
             <Link href="#contact">Create an Animation With Us</Link>
           </Button>
         </div>

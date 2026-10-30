@@ -156,7 +156,7 @@ export default function Contact() {
                 <p className="text-xs text-[#A3A3A3] mb-4 text-center">
                   Your information will only be used to respond to this inquiry. We respect your privacy.
                 </p>
-                <Button disabled={status === "submitting"} size="lg" className="w-full bg-[#F00016] text-white hover:bg-red-700 text-base font-semibold py-6 disabled:opacity-70">
+                <Button disabled={status === "submitting"} size="lg" className="w-full bg-[#F00016] text-white hover:bg-[#D00013] text-base font-semibold py-6 disabled:opacity-70">
                   {status === "submitting" ? "Submitting..." : "Submit Inquiry"}
                 </Button>
               </div>

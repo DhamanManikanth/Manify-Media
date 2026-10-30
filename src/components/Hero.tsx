@@ -52,7 +52,7 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Button asChild size="lg" className="w-full sm:w-auto text-base bg-[#F00016] hover:bg-red-700 text-white border border-[#F00016]">
+            <Button asChild size="lg" className="w-full sm:w-auto text-base bg-[#F00016] hover:bg-[#D00013] text-white border border-[#F00016]">
               <Link href="#contact">
                 Start Your Project
               </Link>

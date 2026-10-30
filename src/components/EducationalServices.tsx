@@ -57,7 +57,7 @@ export default function EducationalServices() {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
-              <Button asChild size="lg" variant="outline" className="bg-[#F00016] text-white hover:bg-red-700 border-[#F00016]">
+              <Button asChild size="lg" variant="outline" className="bg-[#F00016] text-white hover:bg-[#D00013] border-[#F00016]">
                 <Link href="#contact">Create Educational Videos</Link>
               </Button>
             </motion.div>

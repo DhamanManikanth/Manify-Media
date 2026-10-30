@@ -34,12 +34,12 @@ export default function Services() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="glass-card p-10 rounded-3xl flex flex-col h-full hover:bg-neutral-900/80 transition-colors relative overflow-hidden group hover:border-red-900/50"
+            className="glass-card p-10 rounded-3xl flex flex-col h-full hover:bg-neutral-900/80 transition-colors relative overflow-hidden group hover:border-[#F00016]/50"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-red-600/10 blur-[60px] rounded-full group-hover:bg-red-600/20 transition-colors" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#F00016]/10 blur-[60px] rounded-full group-hover:bg-[#F00016]/20 transition-colors" />
             <div className="relative z-10">
-              <div className="bg-red-950/50 border border-red-900/50 w-16 h-16 rounded-2xl flex items-center justify-center mb-8">
-                <MonitorSmartphone className="w-8 h-8 text-red-500" />
+              <div className="bg-[#F00016]/10 border border-[#F00016]/30 w-16 h-16 rounded-2xl flex items-center justify-center mb-8">
+                <MonitorSmartphone className="w-8 h-8 text-[#F00016]" />
               </div>
               <h3 className="text-2xl font-bold mb-4">High-Converting Web Design.</h3>
               <p className="text-neutral-400 leading-relaxed text-lg">
@@ -53,12 +53,12 @@ export default function Services() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="glass-card p-10 rounded-3xl flex flex-col h-full hover:bg-neutral-900/80 transition-colors relative overflow-hidden group hover:border-red-900/50"
+            className="glass-card p-10 rounded-3xl flex flex-col h-full hover:bg-neutral-900/80 transition-colors relative overflow-hidden group hover:border-[#F00016]/50"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-red-600/10 blur-[60px] rounded-full group-hover:bg-red-600/20 transition-colors" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#F00016]/10 blur-[60px] rounded-full group-hover:bg-[#F00016]/20 transition-colors" />
             <div className="relative z-10">
-              <div className="bg-red-950/50 border border-red-900/50 w-16 h-16 rounded-2xl flex items-center justify-center mb-8">
-                <Video className="w-8 h-8 text-red-500" />
+              <div className="bg-[#F00016]/10 border border-[#F00016]/30 w-16 h-16 rounded-2xl flex items-center justify-center mb-8">
+                <Video className="w-8 h-8 text-[#F00016]" />
               </div>
               <h3 className="text-2xl font-bold mb-4">AI Video Ads & Branding.</h3>
               <p className="text-neutral-400 leading-relaxed text-lg">
