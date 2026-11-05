@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { Smartphone, VolumeX, Volume2, Sparkles, CheckCircle2 } from "lucide-react";
+import { Smartphone, VolumeX, Volume2, Sparkles, CheckCircle2, Play, Pause } from "lucide-react";
 import { audio } from "@/lib/audioManager";
 
 // =========================================================================
@@ -199,6 +199,18 @@ interface VideoPlayerCardProps {
 function VideoPlayerCard({ data, isCenter = false }: VideoPlayerCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isMuted, setIsMuted] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(true);
+
+  const togglePlay = () => {
+    if (!videoRef.current) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play().catch(() => {});
+      setIsPlaying(true);
+    } else {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
 
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -210,12 +222,16 @@ function VideoPlayerCard({ data, isCenter = false }: VideoPlayerCardProps) {
 
     if (!newMuted) {
       videoRef.current.play().catch(() => {});
+      setIsPlaying(true);
       audio.setSound(true);
     }
   };
 
   return (
-    <div className="relative w-full h-full bg-black group select-none">
+    <div 
+      onClick={togglePlay}
+      className="relative w-full h-full bg-black group select-none cursor-pointer"
+    >
       {/* Video Element */}
       <video
         ref={videoRef}
@@ -227,10 +243,26 @@ function VideoPlayerCard({ data, isCenter = false }: VideoPlayerCardProps) {
         playsInline
         preload="metadata"
         className="w-full h-full object-cover"
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+        onEnded={() => setIsPlaying(false)}
       />
 
       {/* Subtle Dark Vignette */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/30 pointer-events-none" />
+      <div 
+        className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/30 pointer-events-none transition-opacity duration-300 ${
+          isPlaying ? "opacity-30" : "opacity-90"
+        }`} 
+      />
+
+      {/* Center Paused Indicator */}
+      {!isPlaying && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+          <div className="w-14 h-14 rounded-full bg-[#F00016] text-white flex items-center justify-center shadow-xl shadow-[#F00016]/40 scale-100 animate-in fade-in zoom-in duration-200">
+            <Play className="w-6 h-6 ml-1 fill-white" />
+          </div>
+        </div>
+      )}
 
       {/* Top Header Badge */}
       <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20 pointer-events-none">
@@ -257,8 +289,12 @@ function VideoPlayerCard({ data, isCenter = false }: VideoPlayerCardProps) {
         </button>
       </div>
 
-      {/* Bottom Metadata Label */}
-      <div className="absolute bottom-5 left-5 right-5 z-10 pointer-events-none text-left">
+      {/* Bottom Metadata Label - Hidden when playing, restored when paused/ended */}
+      <div
+        className={`absolute bottom-5 left-5 right-5 z-10 pointer-events-none text-left transition-all duration-300 ${
+          isPlaying ? "opacity-0 translate-y-3 pointer-events-none" : "opacity-100 translate-y-0"
+        }`}
+      >
         <div className="text-[10px] font-mono uppercase tracking-widest text-[#FF334B] mb-1 font-semibold">
           {data.client}
         </div>

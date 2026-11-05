@@ -11,6 +11,7 @@ export type PortfolioVideo = {
   subject?: string;
   featured?: boolean;
   client?: string;
+  tags?: string[];
 };
 
 // 1. AI Brand Films & Advertisements

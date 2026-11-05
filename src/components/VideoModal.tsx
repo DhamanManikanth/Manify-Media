@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { PortfolioVideo } from "@/data/portfolio";
 import { soundFx } from "@/lib/sound";
 
@@ -13,23 +13,33 @@ interface VideoModalProps {
 }
 
 export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     if (isOpen) {
-      // Play warm, smooth velvet sound effect when cinema modal unfolds
       soundFx.playSmoothWhoosh(0.025);
       document.body.style.overflow = "hidden";
       window.addEventListener("keydown", handleKeyDown);
     } else {
       document.body.style.overflow = "unset";
+      setIsPlaying(false);
     }
     return () => {
       document.body.style.overflow = "unset";
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, onClose]);
+
+  // Reset play state when video changes
+  useEffect(() => {
+    if (video) {
+      setIsPlaying(false);
+    }
+  }, [video]);
 
   return (
     <AnimatePresence>
@@ -64,6 +74,7 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
           >
             {video.videoUrl ? (
               <video 
+                ref={videoRef}
                 src={video.videoUrl} 
                 controls 
                 autoPlay 
@@ -71,6 +82,9 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
                 preload="metadata"
                 className="w-full h-full object-contain bg-black"
                 poster={video.thumbnailUrl}
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+                onEnded={() => setIsPlaying(false)}
               />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center bg-[#101010] p-8 text-center">
@@ -82,10 +96,27 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
               </div>
             )}
             
-            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/95 via-black/50 to-transparent text-left pointer-events-none">
-              <h3 className="text-2xl font-bold text-white mb-1">{video.title}</h3>
+            {/* Text Overlay: Hidden when user plays the video, restored when paused or ended */}
+            <div
+              className={`absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/95 via-black/60 to-transparent text-left transition-all duration-300 pointer-events-none z-30 ${
+                isPlaying ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"
+              }`}
+            >
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-1.5">{video.title}</h3>
               {video.description && (
-                <p className="text-[#A3A3A3] text-sm max-w-2xl">{video.description}</p>
+                <p className="text-[#A3A3A3] text-xs sm:text-sm max-w-2xl leading-relaxed mb-2.5">{video.description}</p>
+              )}
+              {video.tags && video.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {video.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2.5 py-0.5 rounded-md bg-black/60 border border-white/10 text-[11px] font-mono text-[#aaa]"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
               )}
             </div>
           </motion.div>

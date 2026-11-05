@@ -76,6 +76,18 @@ html.lenis, html.lenis body {
   }
 }
 
+/* Hide Next.js Dev Indicator Symbol / Overlay Button */
+nextjs-portal,
+[data-nextjs-dev-tools-button],
+[data-nextjs-toast],
+#nextjs-dev-indicator,
+div[data-nextjs-dev-tools-button] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* Touch device cursor reset */
 @media (pointer: coarse) {
   body {
