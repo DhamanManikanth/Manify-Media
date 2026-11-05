@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useEffect } from "react";
 import { PortfolioVideo } from "@/data/portfolio";
+import { soundFx } from "@/lib/sound";
 
 interface VideoModalProps {
   video: PortfolioVideo | null;
@@ -17,6 +18,8 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
       if (e.key === "Escape") onClose();
     };
     if (isOpen) {
+      // Play warm, smooth velvet sound effect when cinema modal unfolds
+      soundFx.playSmoothWhoosh(0.025);
       document.body.style.overflow = "hidden";
       window.addEventListener("keydown", handleKeyDown);
     } else {
@@ -36,13 +39,13 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4 md:p-8 backdrop-blur-sm"
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4 md:p-8 backdrop-blur-md"
         >
           <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            className="absolute top-6 right-6 p-2 bg-[#101010] rounded-full text-white hover:bg-[#F00016] transition-colors z-50"
+            className="absolute top-6 right-6 p-2.5 bg-[#121212] rounded-full text-white hover:bg-[#F00016] transition-colors z-50 border border-white/10"
             onClick={onClose}
             aria-label="Close modal"
           >
@@ -50,12 +53,13 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
           </motion.button>
           
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            initial={{ opacity: 0, y: 30, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            exit={{ opacity: 0, y: 20, scale: 0.96 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className={`relative w-full max-h-[85vh] bg-[#050505] rounded-2xl overflow-hidden border border-[#242424] ${
-              video.aspectRatio === "9:16" ? "max-w-md aspect-[9/16]" : "max-w-5xl aspect-video"
+            className={`relative w-full bg-[#050505] rounded-2xl overflow-hidden border border-[#242424] shadow-2xl ${
+              video.aspectRatio === "9:16" ? "max-w-sm aspect-[9/16] max-h-[82vh]" : "max-w-3xl aspect-video max-h-[72vh]"
             }`}
           >
             {video.videoUrl ? (
@@ -78,7 +82,7 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
               </div>
             )}
             
-            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent text-left pointer-events-none">
+            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/95 via-black/50 to-transparent text-left pointer-events-none">
               <h3 className="text-2xl font-bold text-white mb-1">{video.title}</h3>
               {video.description && (
                 <p className="text-[#A3A3A3] text-sm max-w-2xl">{video.description}</p>

@@ -10,6 +10,7 @@ export type PortfolioVideo = {
   languages?: ("English" | "Telugu" | "Hindi")[];
   subject?: string;
   featured?: boolean;
+  client?: string;
 };
 
 // 1. AI Brand Films & Advertisements

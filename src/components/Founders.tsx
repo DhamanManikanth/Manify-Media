@@ -11,6 +11,8 @@ import {
   User,
   CheckCircle2,
 } from "lucide-react";
+import ScrollPop from "./ScrollPop";
+import { soundFx } from "@/lib/sound";
 
 interface Founder {
   id: string;
@@ -128,11 +130,19 @@ function FounderCard({ founder, index }: { founder: Founder; index: number }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 35 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6, delay: index * 0.15, ease: [0.22, 1, 0.36, 1] }}
-      className="relative rounded-3xl p-[1px] bg-gradient-to-b from-[#242424] via-[#1a1a1a] to-[#141414] hover:from-[#F00016]/60 hover:via-[#F00016]/20 hover:to-[#242424] transition-all duration-500 group shadow-xl hover:shadow-2xl hover:shadow-[#F00016]/10 flex flex-col"
+      initial={{ opacity: 0, scale: 0.85, y: 35 }}
+      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{
+        type: "spring",
+        stiffness: 280,
+        damping: 20,
+        delay: index * 0.15,
+      }}
+      onViewportEnter={() => soundFx.playPop(520 + index * 90, 0.2)}
+      onMouseEnter={() => soundFx.playHover(0.08)}
+      whileHover={{ y: -6, scale: 1.02 }}
+      className="relative rounded-3xl p-[1px] bg-gradient-to-b from-[#242424] via-[#1a1a1a] to-[#141414] hover:from-[#F00016]/70 hover:via-[#F00016]/25 hover:to-[#242424] transition-all duration-300 group shadow-xl hover:shadow-2xl hover:shadow-[#F00016]/15 flex flex-col"
     >
       <div className="rounded-[23px] bg-[#0c0c0c] p-7 md:p-9 flex flex-col h-full relative overflow-hidden">
         {/* Subtle background glow */}
@@ -146,6 +156,7 @@ function FounderCard({ founder, index }: { founder: Founder; index: number }) {
                 src={founder.photoSrc}
                 alt={founder.name}
                 fill
+                sizes="(max-width: 640px) 128px, 150px"
                 className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
                 onError={() => setImageError(true)}
               />
@@ -184,7 +195,8 @@ function FounderCard({ founder, index }: { founder: Founder; index: number }) {
                   rel="noopener noreferrer"
                   aria-label={`${founder.name} on ${social.label}`}
                   title={social.label}
-                  className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all duration-300 shadow-sm ${getSocialStyles(
+                  onClick={() => soundFx.playClick(0.2)}
+                  className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all duration-300 shadow-sm active:scale-95 ${getSocialStyles(
                     social.platform
                   )}`}
                 >
@@ -213,35 +225,27 @@ function FounderCard({ founder, index }: { founder: Founder; index: number }) {
 
 export default function Founders() {
   return (
-    <section id="about" className="py-24 md:py-32 bg-[#050505] text-white border-t border-[#242424] relative overflow-hidden">
+    <section id="about" className="py-12 md:py-20 bg-[#050505] text-white relative overflow-hidden">
       {/* Background ambient lighting */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#F00016]/4 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
         {/* Section Header */}
-        <motion.div
-          className="text-center mb-16 md:mb-24"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <motion.span
-            className="inline-block text-xs font-bold tracking-[0.25em] uppercase text-[#F00016] mb-4"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            The People Behind Manify Media
-          </motion.span>
-          <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-            Two Minds.{" "}
-            <span className="text-gradient">One Creative Vision.</span>
-          </h2>
-          <p className="text-[#A3A3A3] text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-            We are two young creators passionate about AI, technology, storytelling, and building creative solutions. We combine our different experiences to turn ideas into engaging digital experiences.
-          </p>
-        </motion.div>
+        <ScrollPop direction="scale" pitchIndex={0}>
+          <div className="text-center mb-16 md:mb-24">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#141414] border border-[#262626] text-xs font-bold tracking-[0.25em] uppercase text-[#F00016] mb-4">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>The People Behind Manify Media</span>
+            </div>
+            <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
+              Two Minds.{" "}
+              <span className="text-gradient">One Creative Vision.</span>
+            </h2>
+            <p className="text-[#A3A3A3] text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+              We are two young creators passionate about AI, technology, storytelling, and building creative solutions. We combine our different experiences to turn ideas into engaging digital experiences.
+            </p>
+          </div>
+        </ScrollPop>
 
         {/* Founders Side-by-Side Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto mb-20">
@@ -251,13 +255,7 @@ export default function Founders() {
         </div>
 
         {/* What We Bring Together */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="max-w-6xl mx-auto mb-20"
-        >
+        <div className="max-w-6xl mx-auto mb-20">
           <div className="text-center mb-10">
             <span className="text-xs uppercase tracking-[0.2em] font-bold text-[#888]">
               Our Synergy
@@ -271,11 +269,19 @@ export default function Founders() {
               return (
                 <motion.div
                   key={item.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, scale: 0.85, y: 25 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 0.1 * index, duration: 0.5 }}
-                  className="bg-[#0c0c0c] border border-[#222] hover:border-[#F00016]/40 p-7 rounded-2xl transition-all duration-300 group"
+                  transition={{
+                    type: "spring",
+                    stiffness: 280,
+                    damping: 20,
+                    delay: 0.1 * index,
+                  }}
+                  onViewportEnter={() => soundFx.playPop(560 + index * 80, 0.18)}
+                  whileHover={{ y: -5, scale: 1.03 }}
+                  onMouseEnter={() => soundFx.playHover(0.08)}
+                  className="bg-[#0c0c0c] border border-[#222] hover:border-[#F00016]/50 p-7 rounded-2xl transition-all duration-300 group shadow-sm hover:shadow-xl hover:shadow-[#F00016]/10"
                 >
                   <div className="w-12 h-12 rounded-xl bg-[#161616] border border-[#262626] group-hover:border-[#F00016]/40 group-hover:bg-[#F00016]/10 flex items-center justify-center mb-5 transition-colors">
                     <Icon className="w-6 h-6 text-[#F00016]" />
@@ -290,24 +296,20 @@ export default function Founders() {
               );
             })}
           </div>
-        </motion.div>
+        </div>
 
         {/* Final Vision Statement */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="max-w-4xl mx-auto"
-        >
-          <div className="relative rounded-2xl p-8 md:p-12 bg-gradient-to-r from-[#141414] via-[#101010] to-[#141414] border border-[#242424] text-center overflow-hidden">
-            <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-24 bg-[#F00016]/20 rounded-full blur-2xl pointer-events-none" />
-            <Sparkles className="w-7 h-7 text-[#F00016] mx-auto mb-4" />
-            <p className="text-xl md:text-2xl font-bold text-white max-w-2xl mx-auto leading-relaxed">
-              &ldquo;We&apos;re not just creating content. We&apos;re exploring what&apos;s possible when creativity meets AI.&rdquo;
-            </p>
+        <ScrollPop direction="scale" pitchIndex={3}>
+          <div className="max-w-4xl mx-auto">
+            <div className="relative rounded-3xl p-8 md:p-12 bg-gradient-to-r from-[#141414] via-[#101010] to-[#141414] border border-[#242424] hover:border-[#F00016]/40 transition-colors text-center overflow-hidden shadow-2xl">
+              <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-24 bg-[#F00016]/25 rounded-full blur-2xl pointer-events-none" />
+              <Sparkles className="w-7 h-7 text-[#F00016] mx-auto mb-4 animate-pulse" />
+              <p className="text-xl md:text-2xl font-bold text-white max-w-2xl mx-auto leading-relaxed">
+                &ldquo;We&apos;re not just creating content. We&apos;re exploring what&apos;s possible when creativity meets AI.&rdquo;
+              </p>
+            </div>
           </div>
-        </motion.div>
+        </ScrollPop>
       </div>
     </section>
   );

@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import CustomCursor from "@/components/CustomCursor";
+import SmoothScroll from "@/components/scroll/SmoothScroll";
+import ScrollProgress from "@/components/scroll/ScrollProgress";
+import BackToTop from "@/components/BackToTop";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -9,8 +12,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Manify Media | Websites That Sell. AI Videos That Captivate.",
-  description: "We build premium digital experiences and cutting-edge AI video campaigns designed to scale your brand and multiply your revenue.",
+  title: "Manify Media | Premium AI Video Production & Digital Reveals",
+  description:
+    "We engineer high-impact AI commercial video, digital animations, and cinematic reveals at lower cost and faster speed.",
   icons: {
     icon: "/images/favicon.png",
     shortcut: "/images/favicon.png",
@@ -24,13 +28,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} h-full antialiased scroll-smooth`}
-    >
+    <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans bg-[#050505] text-white overflow-x-hidden selection:bg-[#F00016] selection:text-white">
-        <CustomCursor />
-        {children}
+        <SmoothScroll>
+          <ScrollProgress />
+          <CustomCursor />
+          {children}
+          <BackToTop />
+        </SmoothScroll>
       </body>
     </html>
   );

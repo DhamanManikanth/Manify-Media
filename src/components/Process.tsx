@@ -2,7 +2,8 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useSpring, type MotionValue } from "framer-motion";
-import { Search, PenTool, CheckCircle, Rocket, ArrowDown } from "lucide-react";
+import { Search, PenTool, CheckCircle, Rocket } from "lucide-react";
+import { soundFx } from "@/lib/sound";
 
 interface ProcessStep {
   number: string;
@@ -67,68 +68,56 @@ export default function Process() {
     restDelta: 0.001,
   });
 
-  // Track vertical path line progress from 0% to 100%
   const lineHeight = useTransform(smoothProgress, [0, 1], ["0%", "100%"]);
 
   return (
-    <section id="process" className="py-24 md:py-36 bg-[#050505] text-white border-t border-[#242424] relative overflow-hidden">
-      {/* Background ambient lighting */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-[#F00016]/4 rounded-full blur-[150px] pointer-events-none" />
-
+    <section id="process" className="py-12 md:py-20 bg-[#050505] text-white relative overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        {/* Section Header */}
+        {/* Header (Cinematic Glide) */}
         <motion.div
           className="text-center mb-16 md:mb-24 max-w-2xl mx-auto"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 24, filter: "blur(3px)" }}
+          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#141414] border border-[#262626] text-xs font-bold tracking-[0.25em] uppercase text-[#F00016] mb-4"
-          >
-            <span>Our Process</span>
-          </motion.div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#111] border border-[#222] text-[11px] font-mono uppercase tracking-[0.2em] text-[#F00016] mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#F00016]" />
+            <span>Workflow Protocol</span>
+          </div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4">
             From Idea to <span className="text-gradient">Viral Results</span>
           </h2>
 
-          <p className="text-[#A3A3A3] text-base md:text-lg flex items-center justify-center gap-2">
-            <span>From first call to delivery in under a week. Scroll to follow the path.</span>
-            <ArrowDown className="w-4 h-4 text-[#F00016] animate-bounce inline-block" />
+          <p className="text-[#888] text-sm md:text-base">
+            From initial creative audit to 4K master delivery in 7 days or less.
           </p>
         </motion.div>
 
-        {/* Central Interactive Timeline */}
+        {/* Central Motion Graphics Timeline */}
         <div ref={containerRef} className="relative max-w-5xl mx-auto py-8">
-          {/* Continuous Center Track Line (Desktop: Center, Mobile: Left) */}
-          <div className="absolute left-6 md:left-1/2 top-4 bottom-8 w-[3px] -translate-x-1/2 bg-[#1c1c1c] rounded-full overflow-hidden">
-            {/* Animated Red Fill Line */}
+          <div className="absolute left-6 md:left-1/2 top-4 bottom-8 w-[2px] -translate-x-1/2 bg-[#1a1a1a] rounded-full overflow-hidden">
             <motion.div
-              className="w-full origin-top rounded-full bg-gradient-to-b from-[#F00016] via-[#FF334B] to-[#F00016]"
+              className="w-full origin-top bg-gradient-to-b from-[#F00016] via-[#FF334B] to-[#F00016]"
               style={{ height: lineHeight }}
             />
           </div>
 
-          {/* Glowing Lead Tracker Node */}
+          {/* Tracer node */}
           <motion.div
-            className="absolute left-6 md:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full pointer-events-none z-20"
+            className="absolute left-6 md:left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full pointer-events-none z-20"
             style={{
               top: lineHeight,
-              background: "#FF334B",
-              boxShadow: "0 0 16px 5px rgba(240, 0, 22, 0.8), 0 0 32px 10px rgba(255, 51, 75, 0.4)",
+              background: "#F00016",
+              boxShadow: "0 0 12px 3px rgba(240, 0, 22, 0.6)",
               marginTop: "8px",
             }}
           />
 
-          {/* Timeline Steps */}
-          <div className="space-y-16 md:space-y-28 relative z-10">
+          <div className="space-y-16 md:space-y-24 relative z-10">
             {steps.map((step, index) => {
-              const isEven = index % 2 === 0; // Even = Left on desktop, Odd = Right on desktop
+              const isEven = index % 2 === 0;
               const stepProgressStart = index / steps.length;
               const stepProgressEnd = (index + 0.6) / steps.length;
 
@@ -163,117 +152,83 @@ function TimelineStepItem({
   stepProgressStart: number;
   stepProgressEnd: number;
 }) {
-  // Smoothly activate node and card based on scroll progress
-  const isActiveTransform = useTransform(
-    smoothProgress,
-    [stepProgressStart, stepProgressEnd],
-    [0, 1]
-  );
-
-  // Card opacity and scale based on progress
   const cardOpacity = useTransform(smoothProgress, [Math.max(0, stepProgressStart - 0.1), stepProgressStart + 0.1], [0.35, 1]);
-  const cardScale = useTransform(smoothProgress, [Math.max(0, stepProgressStart - 0.1), stepProgressStart + 0.1], [0.96, 1]);
+  const cardY = useTransform(smoothProgress, [Math.max(0, stepProgressStart - 0.1), stepProgressStart + 0.1], [15, 0]);
 
   return (
     <div className="relative flex flex-col md:flex-row items-start md:items-center w-full">
-      {/* Central Step Number Circle (01, 02, etc.) */}
+      {/* Step Number Circle */}
       <div className="absolute left-6 md:left-1/2 -translate-x-1/2 z-20 flex items-center justify-center">
-        <motion.div
-          style={{ scale: cardScale }}
-          className="w-11 h-11 md:w-13 md:h-13 rounded-full flex items-center justify-center transition-all duration-500 relative"
-        >
-          {/* Active Glowing Outer Ring */}
-          <motion.div
-            className="absolute inset-0 rounded-full border-2 border-[#F00016] bg-[#F00016]/10"
-            style={{
-              opacity: isActiveTransform,
-              boxShadow: "0 0 20px 4px rgba(240, 0, 22, 0.45)",
-            }}
-          />
-
-          {/* Base Node */}
-          <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#0c0c0c] border border-[#2b2b2b] flex items-center justify-center relative z-10 shadow-lg">
-            <span className="text-xs md:text-sm font-black tracking-wider text-white">
-              {step.number}
-            </span>
-          </div>
-        </motion.div>
+        <div className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-[#0a0a0a] border border-[#2b2b2b] flex items-center justify-center shadow-lg">
+          <span className="text-xs font-mono font-bold text-white">
+            {step.number}
+          </span>
+        </div>
       </div>
 
-      {/* Alternating Layout:
-          On Desktop:
-          - If isEven (01, 03): Card sits on the LEFT (col 1), empty placeholder on the RIGHT.
-          - If !isEven (02, 04): Empty placeholder on the LEFT, Card sits on the RIGHT (col 2).
-          On Mobile:
-          - Card is always pushed to the right of the left timeline track.
-      */}
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 items-center">
-        {/* LEFT COLUMN (Desktop) */}
+        {/* LEFT COLUMN */}
         <div className={`pl-14 md:pl-0 ${isEven ? "md:text-right" : "hidden md:block"}`}>
           {isEven ? (
             <motion.div
-              style={{ opacity: cardOpacity, scale: cardScale }}
-              className="rounded-3xl p-[1px] bg-gradient-to-b from-[#262626] via-[#1a1a1a] to-[#141414] hover:from-[#F00016]/60 hover:to-[#242424] transition-all duration-500 shadow-xl group"
+              style={{ opacity: cardOpacity, y: cardY }}
+              onMouseEnter={() => soundFx.playHover(0.015)}
+              className="rounded-2xl bg-[#0c0c0c] border border-[#202020] hover:border-[#F00016]/40 p-6 sm:p-7 text-left relative overflow-hidden transition-colors shadow-lg"
             >
-              <div className="rounded-[23px] bg-[#0c0c0c] p-6 sm:p-8 text-left relative overflow-hidden">
-                {/* Top Row: Title + Day Badge */}
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-xl">{step.iconEmoji}</span>
-                    <h3 className="text-xl sm:text-2xl font-bold text-white group-hover:text-white transition-colors">
-                      {step.title}
-                    </h3>
-                  </div>
-
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-[#181818] border border-[#2b2b2b] text-[#F00016] shadow-sm flex-shrink-0">
-                    {step.dayBadge}
-                  </span>
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">{step.iconEmoji}</span>
+                  <h3 className="text-lg sm:text-xl font-bold text-white">
+                    {step.title}
+                  </h3>
                 </div>
 
-                <p className="text-sm sm:text-base text-[#A3A3A3] leading-relaxed mb-4">
-                  {step.description}
-                </p>
-
-                <p className="text-xs sm:text-sm text-[#777] leading-relaxed pt-3 border-t border-[#1a1a1a]">
-                  {step.detail}
-                </p>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded text-[10px] font-mono tracking-wider uppercase bg-[#141414] border border-[#242424] text-[#F00016] flex-shrink-0">
+                  {step.dayBadge}
+                </span>
               </div>
+
+              <p className="text-xs sm:text-sm text-[#888] leading-relaxed mb-3">
+                {step.description}
+              </p>
+
+              <p className="text-[11px] text-[#666] leading-relaxed pt-2.5 border-t border-[#181818]">
+                {step.detail}
+              </p>
             </motion.div>
           ) : (
             <div className="hidden md:block" />
           )}
         </div>
 
-        {/* RIGHT COLUMN (Desktop) */}
+        {/* RIGHT COLUMN */}
         <div className={`pl-14 md:pl-0 ${!isEven ? "" : "hidden md:block"}`}>
           {!isEven ? (
             <motion.div
-              style={{ opacity: cardOpacity, scale: cardScale }}
-              className="rounded-3xl p-[1px] bg-gradient-to-b from-[#262626] via-[#1a1a1a] to-[#141414] hover:from-[#F00016]/60 hover:to-[#242424] transition-all duration-500 shadow-xl group"
+              style={{ opacity: cardOpacity, y: cardY }}
+              onMouseEnter={() => soundFx.playHover(0.015)}
+              className="rounded-2xl bg-[#0c0c0c] border border-[#202020] hover:border-[#F00016]/40 p-6 sm:p-7 text-left relative overflow-hidden transition-colors shadow-lg"
             >
-              <div className="rounded-[23px] bg-[#0c0c0c] p-6 sm:p-8 text-left relative overflow-hidden">
-                {/* Top Row: Title + Day Badge */}
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-xl">{step.iconEmoji}</span>
-                    <h3 className="text-xl sm:text-2xl font-bold text-white group-hover:text-white transition-colors">
-                      {step.title}
-                    </h3>
-                  </div>
-
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-[#181818] border border-[#2b2b2b] text-[#F00016] shadow-sm flex-shrink-0">
-                    {step.dayBadge}
-                  </span>
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">{step.iconEmoji}</span>
+                  <h3 className="text-lg sm:text-xl font-bold text-white">
+                    {step.title}
+                  </h3>
                 </div>
 
-                <p className="text-sm sm:text-base text-[#A3A3A3] leading-relaxed mb-4">
-                  {step.description}
-                </p>
-
-                <p className="text-xs sm:text-sm text-[#777] leading-relaxed pt-3 border-t border-[#1a1a1a]">
-                  {step.detail}
-                </p>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded text-[10px] font-mono tracking-wider uppercase bg-[#141414] border border-[#242424] text-[#F00016] flex-shrink-0">
+                  {step.dayBadge}
+                </span>
               </div>
+
+              <p className="text-xs sm:text-sm text-[#888] leading-relaxed mb-3">
+                {step.description}
+              </p>
+
+              <p className="text-[11px] text-[#666] leading-relaxed pt-2.5 border-t border-[#181818]">
+                {step.detail}
+              </p>
             </motion.div>
           ) : (
             <div className="hidden md:block" />

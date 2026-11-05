@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
+import { motion, AnimatePresence, useInView, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
-import { X, ZoomIn } from "lucide-react";
+import { X, ZoomIn, Sparkles, Layers } from "lucide-react";
+import ScrollPop from "./ScrollPop";
+import { soundFx } from "@/lib/sound";
 
 type PosterCategory = "all" | "brand" | "social" | "promo";
 
@@ -68,7 +70,7 @@ const posters: Poster[] = [
 ];
 
 const categories: { value: PosterCategory; label: string }[] = [
-  { value: "all", label: "All Work" },
+  { value: "all", label: "All Posters" },
   { value: "brand", label: "Brand Campaigns" },
   { value: "social", label: "Social Media" },
   { value: "promo", label: "Promotional" },
@@ -76,47 +78,107 @@ const categories: { value: PosterCategory; label: string }[] = [
 
 function PosterCard({ poster, index, onSelect }: { poster: Poster; index: number; onSelect: (poster: Poster) => void }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const isInView = useInView(ref, { once: true, margin: "-40px" });
+
+  // 3D Tilt Physics
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springCfg = { damping: 20, stiffness: 220 };
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [7, -7]), springCfg);
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-7, 7]), springCfg);
+
+  const [isHovered, setIsHovered] = useState(false);
+  const [glowCoord, setGlowCoord] = useState({ x: 50, y: 50 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const xPct = (e.clientX - rect.left) / rect.width - 0.5;
+    const yPct = (e.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(xPct);
+    mouseY.set(yPct);
+    setGlowCoord({
+      x: ((e.clientX - rect.left) / rect.width) * 100,
+      y: ((e.clientY - rect.top) / rect.height) * 100,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    mouseX.set(0);
+    mouseY.set(0);
+  };
 
   return (
     <motion.div
       ref={ref}
       layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-      className="masonry-item group cursor-pointer relative rounded-2xl overflow-hidden bg-[#101010] border border-[#242424] hover:border-[#F00016]/40 transition-all duration-500"
-      onClick={() => onSelect(poster)}
+      initial={{ opacity: 0, scale: 0.85, y: 35 }}
+      animate={isInView ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.85, y: 35 }}
+      exit={{ opacity: 0, scale: 0.85 }}
+      transition={{
+        duration: 0.7,
+        ease: [0.16, 1, 0.3, 1],
+        delay: (index % 3) * 0.08,
+      }}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d",
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => {
+        setIsHovered(true);
+        soundFx.playHover(0.08);
+      }}
+      onMouseLeave={handleMouseLeave}
+      onClick={() => {
+        soundFx.playClick(0.25);
+        onSelect(poster);
+      }}
+      className="masonry-item group cursor-pointer relative rounded-2xl overflow-hidden bg-[#0c0c0c] border border-white/10 hover:border-[#F00016]/80 transition-shadow duration-500 shadow-lg hover:shadow-2xl hover:shadow-[#F00016]/20 will-change-transform"
     >
+      {/* Dynamic Cursor Light Flare Sweep */}
+      <div
+        className="absolute inset-0 pointer-events-none transition-opacity duration-300 z-10"
+        style={{
+          opacity: isHovered ? 0.4 : 0,
+          background: `radial-gradient(circle 200px at ${glowCoord.x}% ${glowCoord.y}%, rgba(240, 0, 22, 0.5), transparent 75%)`,
+        }}
+      />
+
       <div className={`relative ${poster.aspect === "portrait" ? "aspect-[3/4]" : poster.aspect === "landscape" ? "aspect-[4/3]" : "aspect-square"}`}>
         <Image
           src={poster.src}
           alt={poster.alt}
           fill
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
+          className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-108"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
 
+        {/* Viewfinder Corner Accents */}
+        <div className="absolute top-3 left-3 w-3 h-3 border-t-2 border-l-2 border-white/30 group-hover:border-[#F00016] transition-colors z-20" />
+        <div className="absolute top-3 right-3 w-3 h-3 border-t-2 border-r-2 border-white/30 group-hover:border-[#F00016] transition-colors z-20" />
+        <div className="absolute bottom-3 left-3 w-3 h-3 border-b-2 border-l-2 border-white/30 group-hover:border-[#F00016] transition-colors z-20" />
+        <div className="absolute bottom-3 right-3 w-3 h-3 border-b-2 border-r-2 border-white/30 group-hover:border-[#F00016] transition-colors z-20" />
+
         {/* Hover overlay with vignette */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10" />
 
         {/* Zoom icon on hover */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <motion.div
-            initial={false}
-            className="w-14 h-14 rounded-full bg-[#F00016]/85 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg shadow-[#F00016]/30"
-          >
+        <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+          <div className="w-14 h-14 rounded-full bg-[#F00016] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xl shadow-[#F00016]/50 scale-75 group-hover:scale-100">
             <ZoomIn className="w-6 h-6 text-white" />
-          </motion.div>
+          </div>
         </div>
 
         {/* Card info on hover */}
-        <div className="absolute bottom-0 left-0 right-0 p-5 transform translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-          <span className="text-[10px] uppercase tracking-[0.15em] font-bold text-[#F00016] mb-2 block">
+        <div className="absolute bottom-0 left-0 right-0 p-5 transform translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20 pointer-events-none">
+          <span className="text-[10px] uppercase tracking-[0.15em] font-mono font-bold text-[#F00016] mb-1.5 block">
             {poster.categoryLabel}
           </span>
-          <h3 className="text-white font-bold text-lg leading-snug">
+          <h3 className="text-white font-bold text-base leading-snug">
             {poster.alt}
           </h3>
         </div>
@@ -125,144 +187,115 @@ function PosterCard({ poster, index, onSelect }: { poster: Poster; index: number
   );
 }
 
-function PosterLightbox({ poster, onClose }: { poster: Poster | null; onClose: () => void }) {
-  if (!poster) return null;
-
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex items-center justify-center p-4 md:p-10"
-      >
-        <motion.button
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          onClick={onClose}
-          className="absolute top-6 right-6 p-2 bg-[#101010] rounded-full text-white hover:bg-[#F00016] transition-colors z-50"
-          aria-label="Close lightbox"
-        >
-          <X className="w-6 h-6" />
-        </motion.button>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          transition={{ ease: [0.22, 1, 0.36, 1], duration: 0.4 }}
-          onClick={(e) => e.stopPropagation()}
-          className="relative max-h-[85vh] max-w-3xl w-full rounded-2xl overflow-hidden bg-[#101010] border border-[#242424]"
-        >
-          <div className="relative w-full h-[60vh] md:h-[75vh]">
-            <Image
-              src={poster.src}
-              alt={poster.alt}
-              fill
-              className="object-contain"
-              priority
-              sizes="(max-width: 1024px) 90vw, 800px"
-            />
-          </div>
-
-          <div className="p-6 bg-[#0a0a0a] border-t border-[#242424] flex items-center justify-between">
-            <div>
-              <span className="text-xs uppercase tracking-[0.15em] font-bold text-[#F00016] mb-1 block">
-                {poster.categoryLabel}
-              </span>
-              <h3 className="text-xl font-bold text-white">{poster.alt}</h3>
-            </div>
-            <span className="text-xs text-[#666]">Press ESC or click outside to close</span>
-          </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  );
-}
-
 export default function PostersGallery() {
-  const [activeCategory, setActiveCategory] = useState<PosterCategory>("all");
-  const [selectedPoster, setSelectedPoster] = useState<Poster | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<PosterCategory>("all");
+  const [modalPoster, setModalPoster] = useState<Poster | null>(null);
 
-  const filteredPosters = activeCategory === "all"
+  const filteredPosters = selectedCategory === "all"
     ? posters
-    : posters.filter((p) => p.category === activeCategory);
+    : posters.filter((p) => p.category === selectedCategory);
 
   return (
-    <section id="posters" className="py-24 md:py-32 bg-[#050505] text-white border-t border-[#242424] relative overflow-hidden">
-      {/* Background ambient lighting */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#F00016]/3 rounded-full blur-[120px] pointer-events-none" />
+    <section id="posters" className="py-24 bg-[#050505] text-white relative overflow-hidden">
+      <div className="container mx-auto px-6">
+        <ScrollPop direction="scale" pitchIndex={0}>
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#141414] border border-[#262626] text-xs font-bold tracking-[0.2em] uppercase text-[#F00016] mb-4 shadow-sm">
+              <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+              <span>Creative Brand Visuals</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+              Creative Posters & <span className="text-gradient">Brand Identity</span>
+            </h2>
+            <p className="text-lg md:text-xl text-[#A3A3A3] max-w-2xl mx-auto leading-relaxed">
+              Cinema-quality promotional creative, social media key visuals, and marketing posters designed to stop the scroll.
+            </p>
+          </div>
+        </ScrollPop>
 
-      <div className="container mx-auto px-6 relative z-10">
-        {/* Section Header */}
-        <motion.div
-          className="text-center mb-16 md:mb-20"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <motion.span
-            className="inline-block text-xs font-bold tracking-[0.25em] uppercase text-[#F00016] mb-4"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            Creative Portfolio
-          </motion.span>
-          <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
-            Posters & <span className="text-gradient">Creative Designs</span>
-          </h2>
-          <p className="text-[#A3A3A3] text-lg max-w-2xl mx-auto">
-            High-converting visuals, branding campaigns, and advertising creatives crafted with AI precision.
-          </p>
-        </motion.div>
-
-        {/* Category Filters (Event Posters removed) */}
-        <motion.div
-          className="flex flex-wrap items-center justify-center gap-2 md:gap-3 mb-14"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
+        {/* Filter Pills */}
+        <div className="flex justify-center gap-2 md:gap-3 mb-14 flex-wrap">
           {categories.map((cat) => (
             <button
               key={cat.value}
-              onClick={() => setActiveCategory(cat.value)}
-              className={`px-5 py-2 rounded-full text-xs md:text-sm font-semibold transition-all duration-300 ${
-                activeCategory === cat.value
-                  ? "bg-[#F00016] text-white shadow-md shadow-[#F00016]/30"
-                  : "bg-[#0a0a0a] text-[#888] border border-[#242424] hover:border-[#F00016]/30 hover:text-white"
+              onClick={() => {
+                soundFx.playClick(0.18);
+                setSelectedCategory(cat.value);
+              }}
+              onMouseEnter={() => soundFx.playHover(0.06)}
+              className={`px-5 py-2 rounded-full text-xs font-mono font-semibold transition-all ${
+                selectedCategory === cat.value
+                  ? "bg-[#F00016] text-white shadow-lg shadow-[#F00016]/30"
+                  : "bg-[#111] text-[#888] hover:text-white hover:bg-[#1a1a1a] border border-[#222]"
               }`}
             >
               {cat.label}
             </button>
           ))}
-        </motion.div>
+        </div>
 
-        {/* Masonry Grid */}
-        <motion.div layout className="masonry-grid max-w-6xl mx-auto">
+        {/* Clean, Normal-Sized 3-in-a-Row Responsive Grid */}
+        <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           <AnimatePresence>
             {filteredPosters.map((poster, index) => (
               <PosterCard
                 key={poster.id}
                 poster={poster}
                 index={index}
-                onSelect={setSelectedPoster}
+                onSelect={setModalPoster}
               />
             ))}
           </AnimatePresence>
         </motion.div>
       </div>
 
-      {/* Lightbox Modal */}
-      <PosterLightbox
-        poster={selectedPoster}
-        onClose={() => setSelectedPoster(null)}
-      />
+      {/* Lightbox Modal - Normal Compact Dimensions */}
+      <AnimatePresence>
+        {modalPoster && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setModalPoster(null)}
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4 backdrop-blur-md"
+          >
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="absolute top-6 right-6 p-2.5 bg-[#121212] rounded-full text-white hover:bg-[#F00016] transition-colors z-50 border border-white/10 cursor-pointer"
+              onClick={() => setModalPoster(null)}
+              aria-label="Close modal"
+            >
+              <X className="w-6 h-6" />
+            </motion.button>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.94 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-md md:max-w-lg max-h-[82vh] w-full bg-[#0a0a0a] rounded-2xl overflow-hidden border border-[#222] shadow-2xl p-3"
+            >
+              <div className="relative w-full h-[54vh]">
+                <Image
+                  src={modalPoster.src}
+                  alt={modalPoster.alt}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 768px) 90vw, 500px"
+                />
+              </div>
+              <div className="p-4 text-center">
+                <span className="text-xs font-mono uppercase text-[#F00016] font-bold block mb-1">
+                  {modalPoster.categoryLabel}
+                </span>
+                <h3 className="text-white font-bold text-base">{modalPoster.alt}</h3>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
