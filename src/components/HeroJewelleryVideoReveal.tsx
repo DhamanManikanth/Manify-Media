@@ -9,10 +9,13 @@ interface HeroJewelleryVideoRevealProps {
 export default function HeroJewelleryVideoReveal({ containerRef }: HeroJewelleryVideoRevealProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Without moving cursor, screen remains pure black (isRevealed = false)
+  const [isRevealed, setIsRevealed] = useState(false);
 
   useEffect(() => {
-    // Autoplay video reliably
+    // Autoplay video reliably in background
     if (videoRef.current) {
       videoRef.current.play().catch(() => {});
     }
@@ -27,7 +30,7 @@ export default function HeroJewelleryVideoReveal({ containerRef }: HeroJewellery
     let currentX = targetX;
     let currentY = targetY;
 
-    // Set initial position
+    // Initialize CSS custom properties to center
     wrapper.style.setProperty("--mouse-x", `${currentX}px`);
     wrapper.style.setProperty("--mouse-y", `${currentY}px`);
 
@@ -48,35 +51,56 @@ export default function HeroJewelleryVideoReveal({ containerRef }: HeroJewellery
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
+
+      // Check if mouse is within hero bounds
       if (
-        e.clientY >= rect.top - 80 &&
-        e.clientY <= rect.bottom + 80 &&
-        e.clientX >= rect.left - 40 &&
-        e.clientX <= rect.right + 40
+        e.clientY >= rect.top &&
+        e.clientY <= rect.bottom &&
+        e.clientX >= rect.left &&
+        e.clientX <= rect.right
       ) {
         targetX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
         targetY = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
-        setIsHovered(true);
+
+        // Moving cursor dynamically reveals the video
+        setIsRevealed(true);
 
         if (!rafId) {
           rafId = requestAnimationFrame(updatePosition);
         }
+
+        // If cursor stops moving for 1.8s, smoothly fade back to black screen
+        if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+        idleTimerRef.current = setTimeout(() => {
+          setIsRevealed(false);
+        }, 1800);
       } else {
-        setIsHovered(false);
+        // Outside hero section: fade back to black
+        setIsRevealed(false);
+        if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
       }
     };
 
+    const handleMouseLeave = () => {
+      setIsRevealed(false);
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    };
+
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("mouseleave", handleMouseLeave);
+
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
       if (rafId) cancelAnimationFrame(rafId);
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     };
   }, [containerRef]);
 
   return (
     <div
       ref={wrapperRef}
-      className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden select-none"
+      className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden select-none bg-[#050505]"
       style={{
         "--mouse-x": "50%",
         "--mouse-y": "42%",
@@ -93,46 +117,45 @@ export default function HeroJewelleryVideoReveal({ containerRef }: HeroJewellery
       />
 
       {/* 2. THE JEWELLERY VIDEO - FULL SPACE COVERAGE
-             Spans 100% edge-to-edge across the entire hero section */}
-      <video
-        ref={videoRef}
-        src="/videos/jewelry-brand-ad.mp4"
-        poster="/images/thumb-jewelry-brand-ad.jpg"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        className="absolute inset-0 w-full h-full object-cover scale-105"
-      />
-
-      {/* 3. DYNAMIC CURSOR REVEAL TINT MASK
-             The video plays across the entire hero background with a smooth dark cinematic tint.
-             As the user sweeps the cursor across the section, this dark overlay is cleared away
-             via a generous 480px spotlight, revealing the luxury jewellery video with 100% brilliance! */}
+             Without moving cursor: completely hidden (pure black screen visible).
+             When moving cursor: dynamically revealed through a smooth 400px spotlight mask! */}
       <div
-        className="absolute inset-0 z-[2] transition-opacity duration-300"
+        className={`absolute inset-0 w-full h-full z-[2] transition-opacity duration-500 ease-out ${
+          isRevealed ? "opacity-100" : "opacity-0"
+        }`}
         style={{
-          backgroundColor: "rgba(5, 5, 5, 0.72)",
           WebkitMaskImage:
-            "radial-gradient(circle 480px at var(--mouse-x, 50%) var(--mouse-y, 42%), transparent 30%, rgba(0,0,0,0.65) 65%, black 100%)",
+            "radial-gradient(circle 400px at var(--mouse-x, 50%) var(--mouse-y, 42%), black 30%, rgba(0,0,0,0.45) 65%, transparent 100%)",
           maskImage:
-            "radial-gradient(circle 480px at var(--mouse-x, 50%) var(--mouse-y, 42%), transparent 30%, rgba(0,0,0,0.65) 65%, black 100%)",
+            "radial-gradient(circle 400px at var(--mouse-x, 50%) var(--mouse-y, 42%), black 30%, rgba(0,0,0,0.45) 65%, transparent 100%)",
         }}
-      />
+      >
+        <video
+          ref={videoRef}
+          src="/videos/jewelry-brand-ad.mp4"
+          poster="/images/thumb-jewelry-brand-ad.jpg"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          className="w-full h-full object-cover scale-105"
+        />
+      </div>
 
-      {/* 4. SOFT AMBIENT CURSOR HALO
-             Gives a luxury warm/red spotlight glow that follows the cursor */}
+      {/* 3. SOFT AMBIENT CURSOR HALO
+             Reveals a subtle warm/red luxury glow following the cursor pointer */}
       <div
-        className="absolute inset-0 z-[3] transition-opacity duration-300 pointer-events-none"
+        className={`absolute inset-0 z-[3] transition-opacity duration-500 pointer-events-none ${
+          isRevealed ? "opacity-90" : "opacity-0"
+        }`}
         style={{
-          opacity: isHovered ? 0.95 : 0.45,
           background:
-            "radial-gradient(circle 500px at var(--mouse-x, 50%) var(--mouse-y, 42%), rgba(240, 0, 22, 0.16) 0%, rgba(240, 0, 22, 0.03) 55%, transparent 75%)",
+            "radial-gradient(circle 440px at var(--mouse-x, 50%) var(--mouse-y, 42%), rgba(240, 0, 22, 0.16) 0%, rgba(240, 0, 22, 0.03) 55%, transparent 75%)",
         }}
       />
 
-      {/* 5. SMOOTH SECTION TRANSITIONS (Only top & bottom edges blend into #050505) */}
+      {/* 4. SMOOTH SECTION TRANSITIONS (Top and bottom edge blend into #050505) */}
       <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#050505] to-transparent z-[4] pointer-events-none" />
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#050505] to-transparent z-[4] pointer-events-none" />
     </div>
