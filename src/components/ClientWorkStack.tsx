@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import Image from "next/image";
 import { Play, Pause, Sparkles, ArrowRight, Maximize2 } from "lucide-react";
@@ -63,18 +63,21 @@ const CLIENT_PROJECTS = [
 ];
 
 export default function ClientWorkStack() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const cardsContainerRef = useRef<HTMLDivElement>(null);
   const [activeModalVideo, setActiveModalVideo] = useState<PortfolioVideo | null>(null);
+  
+  // Single active playing video ID: only ONE video plays at a time across all samples
+  const [currentlyPlayingId, setCurrentlyPlayingId] = useState<string | null>(null);
 
+  // Bind scroll directly to the cards container so stacking begins exactly at card 0
   const { scrollYProgress } = useScroll({
-    target: containerRef,
+    target: cardsContainerRef,
     offset: ["start start", "end end"],
   });
 
   return (
     <section
       id="client-work"
-      ref={containerRef}
       className="relative bg-[#050505] text-white"
     >
       {/* Section Anchor Header */}
@@ -85,7 +88,6 @@ export default function ClientWorkStack() {
               <Sparkles className="w-3.5 h-3.5" />
               <span>SAMPLE SHOWCASE</span>
             </div>
-            {/* Title updated to "Sample Work" */}
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white">
               Sample <span className="text-gradient">Work</span>
             </h2>
@@ -97,7 +99,7 @@ export default function ClientWorkStack() {
       </div>
 
       {/* Stacking Card Canvas */}
-      <div className="relative">
+      <div ref={cardsContainerRef} className="relative">
         {CLIENT_PROJECTS.map((project, index) => (
           <ProjectCard
             key={project.id}
@@ -105,7 +107,12 @@ export default function ClientWorkStack() {
             index={index}
             total={CLIENT_PROJECTS.length}
             scrollYProgress={scrollYProgress}
-            onOpenModal={(videoData) => setActiveModalVideo(videoData)}
+            currentlyPlayingId={currentlyPlayingId}
+            onSetCurrentlyPlaying={setCurrentlyPlayingId}
+            onOpenModal={(videoData) => {
+              setCurrentlyPlayingId(null);
+              setActiveModalVideo(videoData);
+            }}
           />
         ))}
       </div>
@@ -125,54 +132,78 @@ function ProjectCard({
   index,
   total,
   scrollYProgress,
+  currentlyPlayingId,
+  onSetCurrentlyPlaying,
   onOpenModal,
 }: {
   project: (typeof CLIENT_PROJECTS)[0];
   index: number;
   total: number;
   scrollYProgress: MotionValue<number>;
+  currentlyPlayingId: string | null;
+  onSetCurrentlyPlaying: (id: string | null) => void;
   onOpenModal: (video: PortfolioVideo) => void;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+
+  const isPlaying = currentlyPlayingId === project.id;
 
   const range = [index * (1 / total), (index + 1) * (1 / total)];
   const isLast = index === total - 1;
 
-  // Transform values for card stacking effect
+  // Smooth subtle scale: card scales gently down to 0.96 as the next card slides over it
   const scale = useTransform(
     scrollYProgress,
     range,
-    isLast ? [1, 1] : [1, 0.94]
+    isLast ? [1, 1] : [1, 0.96]
   );
-  const opacity = useTransform(
-    scrollYProgress,
-    range,
-    isLast ? [1, 1] : [1, 0.4]
-  );
+
+  // Soft dimming veil: darkens the card underneath cleanly without transparency flickers
   const dimOverlay = useTransform(
     scrollYProgress,
     range,
-    isLast ? [0, 0] : [0, 0.65]
+    isLast ? [0, 0] : [0, 0.48]
   );
 
-  const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (videoRef.current.paused) {
-      videoRef.current.play().catch(() => {});
-      setIsPlaying(true);
+  // Single video player enforcement: play this video if active, pause if another video takes over
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isPlaying) {
+      video.play().catch(() => {});
     } else {
-      videoRef.current.pause();
-      setIsPlaying(false);
+      if (!video.paused) {
+        video.pause();
+      }
+    }
+  }, [isPlaying]);
+
+  // Auto-pause video when the card is scrolled past / covered by the next card
+  useEffect(() => {
+    if (isLast) return;
+    const threshold = (index + 0.75) / total;
+
+    const unsubscribe = scrollYProgress.on("change", (latest) => {
+      if (isPlaying && latest > threshold) {
+        onSetCurrentlyPlaying(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [scrollYProgress, index, total, isPlaying, isLast, onSetCurrentlyPlaying]);
+
+  const togglePlay = () => {
+    if (isPlaying) {
+      onSetCurrentlyPlaying(null);
+    } else {
+      onSetCurrentlyPlaying(project.id);
     }
   };
 
   const handleOpenModal = () => {
-    if (videoRef.current && !videoRef.current.paused) {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    }
+    onSetCurrentlyPlaying(null);
     onOpenModal({
       id: project.id,
       title: project.client,
@@ -192,16 +223,17 @@ function ProjectCard({
       style={{ zIndex: index + 1 }}
     >
       <motion.div
-        style={{ scale, opacity }}
-        className="w-full max-w-6xl h-[82vh] md:h-[84vh] rounded-3xl bg-[#0c0c0c] border border-white/10 shadow-2xl relative overflow-hidden flex flex-col lg:flex-row will-change-transform"
+        style={{ scale }}
+        className="w-full max-w-6xl h-[82vh] md:h-[84vh] rounded-3xl bg-[#0c0c0c] border border-white/10 shadow-2xl relative overflow-hidden flex flex-col lg:flex-row transform-gpu will-change-transform"
       >
+        {/* Smooth progressive dimming veil when the card underneath is stacked over */}
         <motion.div
           style={{ opacity: dimOverlay }}
-          className="absolute inset-0 bg-black pointer-events-none z-30 transition-opacity"
+          className="absolute inset-0 bg-[#050505] pointer-events-none z-30"
         />
 
         {/* LEFT COLUMN: Project Details (Title, Description, Tags) - Hidden when playing, restored when paused/ended */}
-        <div className="w-full lg:w-5/12 p-6 sm:p-8 md:12 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-white/[0.08] relative z-20 bg-[#0c0c0c]/90">
+        <div className="w-full lg:w-5/12 p-6 sm:p-8 md:p-12 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-white/[0.08] relative z-20 bg-[#0c0c0c]">
           <div
             className={`transition-all duration-300 ${
               isPlaying ? "opacity-0 pointer-events-none -translate-y-2" : "opacity-100 translate-y-0"
@@ -245,16 +277,16 @@ function ProjectCard({
 
           {/* Persistent Mini Playback Bar if playing */}
           {isPlaying && (
-            <div className="py-4 my-auto flex items-center justify-between bg-black/40 border border-white/10 rounded-2xl p-4">
+            <div className="py-4 my-auto flex items-center justify-between bg-black/60 border border-[#F00016]/30 rounded-2xl p-4 shadow-lg">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#F00016] animate-ping" />
-                <span className="text-xs font-mono text-white">Playing Video...</span>
+                <span className="text-xs font-mono text-white font-medium">Playing Video Sample</span>
               </div>
               <button
                 onClick={togglePlay}
-                className="text-xs font-mono text-[#F00016] hover:underline cursor-pointer"
+                className="text-xs font-mono text-[#FF334B] hover:text-white hover:underline cursor-pointer transition-colors"
               >
-                Pause & Restore Details
+                Pause & Restore Info
               </button>
             </div>
           )}
@@ -306,9 +338,21 @@ function ProjectCard({
             playsInline
             preload="metadata"
             className="w-full h-full object-cover"
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-            onEnded={() => setIsPlaying(false)}
+            onPlay={() => {
+              if (currentlyPlayingId !== project.id) {
+                onSetCurrentlyPlaying(project.id);
+              }
+            }}
+            onPause={() => {
+              if (currentlyPlayingId === project.id) {
+                onSetCurrentlyPlaying(null);
+              }
+            }}
+            onEnded={() => {
+              if (currentlyPlayingId === project.id) {
+                onSetCurrentlyPlaying(null);
+              }
+            }}
           />
 
           {/* Thumbnail Image (Fades out when playing) */}
@@ -328,7 +372,7 @@ function ProjectCard({
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/30" />
           </div>
 
-          {/* Center Play/Pause Indicator */}
+          {/* Center Play Indicator (When Paused) */}
           {!isPlaying && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="w-16 h-16 rounded-full bg-[#F00016] text-white flex items-center justify-center shadow-2xl shadow-[#F00016]/40 transform group-hover:scale-110 transition-transform duration-300">
