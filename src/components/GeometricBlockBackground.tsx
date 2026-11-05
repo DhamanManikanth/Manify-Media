@@ -27,7 +27,7 @@ const GEOMETRIC_BLOCKS = [
 
 export default function GeometricBlockBackground() {
   return (
-    <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden rounded-3xl">
+    <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden">
       {/* Floating & Fading Geometric Blocks in Normal Black/White/Red Palette */}
       <div className="absolute inset-0">
         {GEOMETRIC_BLOCKS.map((block) => {

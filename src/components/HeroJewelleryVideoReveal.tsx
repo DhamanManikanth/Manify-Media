@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useMotionValue, useSpring, useMotionTemplate } from "framer-motion";
 
 interface HeroJewelleryVideoRevealProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -9,18 +8,8 @@ interface HeroJewelleryVideoRevealProps {
 
 export default function HeroJewelleryVideoReveal({ containerRef }: HeroJewelleryVideoRevealProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-
-  // Mouse tracking initialized to center of screen
-  const mouseX = useMotionValue(700);
-  const mouseY = useMotionValue(350);
-
-  const springX = useSpring(mouseX, { stiffness: 220, damping: 28 });
-  const springY = useSpring(mouseY, { stiffness: 220, damping: 28 });
-
-  // Dynamic circular video spotlight mask tracking the cursor
-  const videoMask = useMotionTemplate`radial-gradient(circle 350px at ${springX}px ${springY}px, rgba(0,0,0,1) 40%, rgba(0,0,0,0.35) 75%, transparent 100%)`;
-  const haloGlow = useMotionTemplate`radial-gradient(circle 350px at ${springX}px ${springY}px, rgba(240,0,22,0.16) 0%, transparent 80%)`;
 
   useEffect(() => {
     // Autoplay video reliably
@@ -28,42 +17,74 @@ export default function HeroJewelleryVideoReveal({ containerRef }: HeroJewellery
       videoRef.current.play().catch(() => {});
     }
 
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      mouseX.set(rect.width / 2);
-      mouseY.set(rect.height * 0.42);
-    }
+    const container = containerRef.current;
+    const wrapper = wrapperRef.current;
+    if (!container || !wrapper) return;
+
+    let rafId: number | null = null;
+    let targetX = container.clientWidth / 2;
+    let targetY = container.clientHeight * 0.42;
+    let currentX = targetX;
+    let currentY = targetY;
+
+    // Set initial position
+    wrapper.style.setProperty("--mouse-x", `${currentX}px`);
+    wrapper.style.setProperty("--mouse-y", `${currentY}px`);
+
+    const updatePosition = () => {
+      // Smooth fluid trailing motion
+      currentX += (targetX - currentX) * 0.18;
+      currentY += (targetY - currentY) * 0.18;
+
+      wrapper.style.setProperty("--mouse-x", `${currentX.toFixed(1)}px`);
+      wrapper.style.setProperty("--mouse-y", `${currentY.toFixed(1)}px`);
+
+      if (Math.abs(targetX - currentX) > 0.1 || Math.abs(targetY - currentY) > 0.1) {
+        rafId = requestAnimationFrame(updatePosition);
+      } else {
+        rafId = null;
+      }
+    };
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-
-      // Track cursor whenever mouse is within hero bounds
+      const rect = container.getBoundingClientRect();
       if (
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom &&
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right
+        e.clientY >= rect.top - 80 &&
+        e.clientY <= rect.bottom + 80 &&
+        e.clientX >= rect.left - 40 &&
+        e.clientX <= rect.right + 40
       ) {
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        mouseX.set(x);
-        mouseY.set(y);
+        targetX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+        targetY = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
         setIsHovered(true);
+
+        if (!rafId) {
+          rafId = requestAnimationFrame(updatePosition);
+        }
       } else {
         setIsHovered(false);
       }
     };
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [containerRef, mouseX, mouseY]);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [containerRef]);
 
   return (
-    <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden select-none bg-[#050505]">
-      {/* 1. Underlying Architectural Grid */}
+    <div
+      ref={wrapperRef}
+      className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden select-none"
+      style={{
+        "--mouse-x": "50%",
+        "--mouse-y": "42%",
+      } as React.CSSProperties}
+    >
+      {/* 1. Underlying Architectural Grid Pattern */}
       <div
-        className="absolute inset-0 opacity-[0.035]"
+        className="absolute inset-0 opacity-[0.035] z-[1]"
         style={{
           backgroundImage:
             "linear-gradient(to right, rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.12) 1px, transparent 1px)",
@@ -71,39 +92,49 @@ export default function HeroJewelleryVideoReveal({ containerRef }: HeroJewellery
         }}
       />
 
-      {/* 2. THE JEWELLERY VIDEO LAYER (Positioned at z-0, visible and revealed by cursor spotlight) */}
-      <motion.div
-        className="absolute inset-0 w-full h-full"
-        style={{
-          WebkitMaskImage: videoMask,
-          maskImage: videoMask,
-        }}
-      >
-        <video
-          ref={videoRef}
-          src="/videos/jewelry-brand-ad.mp4"
-          poster="/images/thumb-jewelry-brand-ad.jpg"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          className="w-full h-full object-cover scale-105"
-        />
-      </motion.div>
+      {/* 2. THE JEWELLERY VIDEO - FULL SPACE COVERAGE
+             Spans 100% edge-to-edge across the entire hero section */}
+      <video
+        ref={videoRef}
+        src="/videos/jewelry-brand-ad.mp4"
+        poster="/images/thumb-jewelry-brand-ad.jpg"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        className="absolute inset-0 w-full h-full object-cover scale-105"
+      />
 
-      {/* 3. Soft Ambient Cursor Halo following cursor */}
-      <motion.div
-        className="absolute inset-0 transition-opacity duration-300 pointer-events-none"
+      {/* 3. DYNAMIC CURSOR REVEAL TINT MASK
+             The video plays across the entire hero background with a smooth dark cinematic tint.
+             As the user sweeps the cursor across the section, this dark overlay is cleared away
+             via a generous 480px spotlight, revealing the luxury jewellery video with 100% brilliance! */}
+      <div
+        className="absolute inset-0 z-[2] transition-opacity duration-300"
         style={{
-          opacity: isHovered ? 0.8 : 0.3,
-          background: haloGlow,
+          backgroundColor: "rgba(5, 5, 5, 0.72)",
+          WebkitMaskImage:
+            "radial-gradient(circle 480px at var(--mouse-x, 50%) var(--mouse-y, 42%), transparent 30%, rgba(0,0,0,0.65) 65%, black 100%)",
+          maskImage:
+            "radial-gradient(circle 480px at var(--mouse-x, 50%) var(--mouse-y, 42%), transparent 30%, rgba(0,0,0,0.65) 65%, black 100%)",
         }}
       />
 
-      {/* 4. Fine Vignette around edges to smoothly blend into #050505 */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-[#050505]/70 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/40 via-transparent to-[#050505]/40 pointer-events-none" />
+      {/* 4. SOFT AMBIENT CURSOR HALO
+             Gives a luxury warm/red spotlight glow that follows the cursor */}
+      <div
+        className="absolute inset-0 z-[3] transition-opacity duration-300 pointer-events-none"
+        style={{
+          opacity: isHovered ? 0.95 : 0.45,
+          background:
+            "radial-gradient(circle 500px at var(--mouse-x, 50%) var(--mouse-y, 42%), rgba(240, 0, 22, 0.16) 0%, rgba(240, 0, 22, 0.03) 55%, transparent 75%)",
+        }}
+      />
+
+      {/* 5. SMOOTH SECTION TRANSITIONS (Only top & bottom edges blend into #050505) */}
+      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#050505] to-transparent z-[4] pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#050505] to-transparent z-[4] pointer-events-none" />
     </div>
   );
 }
