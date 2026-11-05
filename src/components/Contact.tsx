@@ -179,7 +179,7 @@ export default function Contact() {
                     type="text"
                     onFocus={() => audio.playHoverTick()}
                     className="w-full bg-[#101010] border border-[#262626] rounded-xl px-4 py-3.5 text-white placeholder:text-[#555] focus:outline-none focus:border-[#F00016] transition-all text-sm font-mono"
-                    placeholder="e.g. Nexa Luxury or App Name"
+                    placeholder="e.g. Your Brand or App Name"
                   />
                 </div>
 

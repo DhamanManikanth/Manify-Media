@@ -12,10 +12,10 @@ const VERTICAL_VIDEOS = [
   {
     id: "reel-left",
     position: "left",
-    client: "SAMPLE WORK · AI SPOKESPERSON",
+    client: "SAMPLE #1 · AI SPOKESPERSON",
     headline: "Digital Avatar Commercial Reel",
     metric: "High-Retention Conversion Creative",
-    badge: "SAMPLE WORK",
+    badge: "SAMPLE #1",
     /* SWAP VERTICAL 9:16 VIDEO URL HERE: */
     videoUrl: "/videos/avatar-ai-reel.mp4",
     posterUrl: "/images/thumb-avatar-ai-reel.jpg",
@@ -23,10 +23,10 @@ const VERTICAL_VIDEOS = [
   {
     id: "reel-center",
     position: "center",
-    client: "SAMPLE WORK · LUXURY COMMERCE",
+    client: "SAMPLE #2 · LUXURY COMMERCE",
     headline: "High-Retention Hero Ad",
     metric: "Cinematic Luxury Ad · High ROAS",
-    badge: "SAMPLE WORK",
+    badge: "SAMPLE #2",
     /* SWAP VERTICAL 9:16 VIDEO URL HERE: */
     videoUrl: "/videos/client-reel-1.mp4",
     posterUrl: "/images/thumb-client-reel-1.jpg",
@@ -34,10 +34,10 @@ const VERTICAL_VIDEOS = [
   {
     id: "reel-right",
     position: "right",
-    client: "SAMPLE WORK · MACRO PRECISION",
+    client: "SAMPLE #3 · MACRO PRECISION",
     headline: "Product Reveal Loop",
     metric: "Macro Precision · 80% Cost Saved",
-    badge: "SAMPLE WORK",
+    badge: "SAMPLE #3",
     /* SWAP VERTICAL 9:16 VIDEO URL HERE: */
     videoUrl: "/videos/client-reel-2.mp4",
     posterUrl: "/images/thumb-client-reel-2.jpg",
